@@ -1,6 +1,6 @@
 CARE AI — Your Intelligent Health Companion
 
-🚀 Live Demo: CARE AI Enhanced
+🚀 Live Demo: https://care24-qf3n.onrender.com/
 
 🩺 CARE AI
 
