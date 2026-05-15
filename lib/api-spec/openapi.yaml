@@ -1,15 +1,28 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: CareAI Healthcare Triage API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Authentication operations
+  - name: chat
+    description: AI chat operations
+  - name: assessment
+    description: Symptom assessment operations
+  - name: report
+    description: Health report operations
+  - name: voice
+    description: Voice assistant operations
+  - name: user
+    description: User profile operations
+  - name: telemedicine
+    description: Telemedicine operations
 paths:
   /healthz:
     get:
@@ -24,7 +37,391 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /auth/register:
+    post:
+      operationId: register
+      tags: [auth]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterInput"
+      responses:
+        "201":
+          description: User registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Email already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login with email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginInput"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Logout current user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Logged out
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /auth/refresh:
+    post:
+      operationId: refreshToken
+      tags: [auth]
+      summary: Refresh access token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshInput"
+      responses:
+        "200":
+          description: Token refreshed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid refresh token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current user info
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /chat/message:
+    post:
+      operationId: sendChatMessage
+      tags: [chat]
+      summary: Send a message to AI chatbot
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChatMessageInput"
+      responses:
+        "200":
+          description: AI response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatResponse"
+
+  /chat/history:
+    get:
+      operationId: getChatHistory
+      tags: [chat]
+      summary: Get chat history for current session or user
+      parameters:
+        - name: sessionId
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        "200":
+          description: Chat history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ChatMessage"
+
+  /assessment/submit:
+    post:
+      operationId: submitAssessment
+      tags: [assessment]
+      summary: Submit a symptom assessment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AssessmentInput"
+      responses:
+        "201":
+          description: Assessment result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Assessment"
+
+  /assessment/history:
+    get:
+      operationId: getAssessmentHistory
+      tags: [assessment]
+      summary: Get assessment history
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: Assessment history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Assessment"
+
+  /assessment/{id}:
+    get:
+      operationId: getAssessment
+      tags: [assessment]
+      summary: Get a specific assessment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Assessment details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Assessment"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /report/generate:
+    post:
+      operationId: generateReport
+      tags: [report]
+      summary: Generate a health report from an assessment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReportInput"
+      responses:
+        "201":
+          description: Generated report
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Report"
+
+  /report/list:
+    get:
+      operationId: listReports
+      tags: [report]
+      summary: List reports for current user or session
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        "200":
+          description: Reports list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Report"
+
+  /voice/transcript:
+    post:
+      operationId: saveVoiceTranscript
+      tags: [voice]
+      summary: Save a voice transcript
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VoiceTranscriptInput"
+      responses:
+        "201":
+          description: Saved transcript with AI response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VoiceTranscript"
+
+  /user/profile:
+    get:
+      operationId: getUserProfile
+      tags: [user]
+      summary: Get user profile and preferences
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+
+  /user/preferences:
+    patch:
+      operationId: updateUserPreferences
+      tags: [user]
+      summary: Update user preferences (language, voice settings)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserPreferencesInput"
+      responses:
+        "200":
+          description: Updated preferences
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+
+  /telemedicine/doctors:
+    get:
+      operationId: listDoctors
+      tags: [telemedicine]
+      summary: List available doctors
+      parameters:
+        - name: specialty
+          in: query
+          schema:
+            type: string
+        - name: available
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: Doctors list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Doctor"
+
+  /telemedicine/book:
+    post:
+      operationId: bookAppointment
+      tags: [telemedicine]
+      summary: Book a telemedicine appointment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AppointmentInput"
+      responses:
+        "201":
+          description: Appointment booked
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Appointment"
+
+  /analytics/summary:
+    get:
+      operationId: getAnalyticsSummary
+      tags: [assessment]
+      summary: Get health analytics summary for current user/session
+      responses:
+        "200":
+          description: Analytics summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyticsSummary"
+
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     HealthStatus:
       type: object
@@ -34,3 +431,379 @@ components:
       required:
         - status
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
+
+    RegisterInput:
+      type: object
+      required: [email, password, name]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 6
+        name:
+          type: string
+          minLength: 1
+
+    LoginInput:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    RefreshInput:
+      type: object
+      required: [refreshToken]
+      properties:
+        refreshToken:
+          type: string
+
+    User:
+      type: object
+      required: [id, email, name, createdAt]
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    AuthResponse:
+      type: object
+      required: [accessToken, refreshToken, user]
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+
+    UserProfile:
+      type: object
+      required: [id, email, name, language, voiceEnabled, createdAt]
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        name:
+          type: string
+        language:
+          type: string
+          enum: [en, hi, kn]
+        voiceEnabled:
+          type: boolean
+        voiceRate:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+
+    UserPreferencesInput:
+      type: object
+      properties:
+        language:
+          type: string
+          enum: [en, hi, kn]
+        voiceEnabled:
+          type: boolean
+        voiceRate:
+          type: number
+
+    ChatMessageInput:
+      type: object
+      required: [message, language]
+      properties:
+        message:
+          type: string
+        language:
+          type: string
+          enum: [en, hi, kn]
+        sessionId:
+          type: ["string", "null"]
+        userId:
+          type: ["integer", "null"]
+
+    ChatMessage:
+      type: object
+      required: [id, role, content, language, createdAt]
+      properties:
+        id:
+          type: integer
+        role:
+          type: string
+          enum: [user, assistant]
+        content:
+          type: string
+        language:
+          type: string
+        sessionId:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+
+    ChatResponse:
+      type: object
+      required: [message, riskScore, riskLevel, intent, sessionId]
+      properties:
+        message:
+          type: string
+        riskScore:
+          type: integer
+        riskLevel:
+          type: string
+          enum: [low, moderate, high, emergency]
+        intent:
+          type: string
+        sessionId:
+          type: string
+        emergencyDetected:
+          type: boolean
+        recommendations:
+          type: array
+          items:
+            type: string
+
+    AssessmentInput:
+      type: object
+      required: [symptoms, age, gender, painLevel, language]
+      properties:
+        symptoms:
+          type: array
+          items:
+            type: string
+        age:
+          type: integer
+        gender:
+          type: string
+        painLevel:
+          type: integer
+        additionalNotes:
+          type: ["string", "null"]
+        language:
+          type: string
+          enum: [en, hi, kn]
+        userId:
+          type: ["integer", "null"]
+        sessionId:
+          type: ["string", "null"]
+        patientName:
+          type: ["string", "null"]
+
+    Assessment:
+      type: object
+      required: [id, symptoms, age, gender, painLevel, riskScore, riskLevel, recommendations, createdAt]
+      properties:
+        id:
+          type: integer
+        symptoms:
+          type: array
+          items:
+            type: string
+        age:
+          type: integer
+        gender:
+          type: string
+        painLevel:
+          type: integer
+        riskScore:
+          type: integer
+        riskLevel:
+          type: string
+          enum: [low, moderate, high, emergency]
+        recommendations:
+          type: array
+          items:
+            type: string
+        additionalNotes:
+          type: ["string", "null"]
+        patientName:
+          type: ["string", "null"]
+        language:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    ReportInput:
+      type: object
+      required: [assessmentId]
+      properties:
+        assessmentId:
+          type: integer
+        userId:
+          type: ["integer", "null"]
+        sessionId:
+          type: ["string", "null"]
+
+    Report:
+      type: object
+      required: [id, assessmentId, summary, createdAt]
+      properties:
+        id:
+          type: integer
+        assessmentId:
+          type: integer
+        summary:
+          type: string
+        diagnosis:
+          type: string
+        recommendations:
+          type: array
+          items:
+            type: string
+        assessment:
+          $ref: "#/components/schemas/Assessment"
+        createdAt:
+          type: string
+          format: date-time
+
+    VoiceTranscriptInput:
+      type: object
+      required: [transcript, language]
+      properties:
+        transcript:
+          type: string
+        language:
+          type: string
+          enum: [en, hi, kn]
+        userId:
+          type: ["integer", "null"]
+        sessionId:
+          type: ["string", "null"]
+
+    VoiceTranscript:
+      type: object
+      required: [id, transcript, language, aiResponse, createdAt]
+      properties:
+        id:
+          type: integer
+        transcript:
+          type: string
+        language:
+          type: string
+        aiResponse:
+          type: string
+        intent:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    Doctor:
+      type: object
+      required: [id, name, specialty, experience, rating, reviewCount, available]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        specialty:
+          type: string
+        experience:
+          type: integer
+        rating:
+          type: number
+        reviewCount:
+          type: integer
+        available:
+          type: boolean
+        avatarEmoji:
+          type: string
+        nextSlot:
+          type: ["string", "null"]
+
+    AppointmentInput:
+      type: object
+      required: [doctorId, type]
+      properties:
+        doctorId:
+          type: integer
+        type:
+          type: string
+          enum: [video, chat, callback]
+        userId:
+          type: ["integer", "null"]
+        sessionId:
+          type: ["string", "null"]
+        preferredTime:
+          type: ["string", "null"]
+
+    Appointment:
+      type: object
+      required: [id, doctorId, type, status, createdAt]
+      properties:
+        id:
+          type: integer
+        doctorId:
+          type: integer
+        type:
+          type: string
+        status:
+          type: string
+        doctor:
+          $ref: "#/components/schemas/Doctor"
+        scheduledAt:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+
+    AnalyticsSummary:
+      type: object
+      required: [totalAssessments, avgRiskScore, riskDistribution, recentAssessments]
+      properties:
+        totalAssessments:
+          type: integer
+        avgRiskScore:
+          type: number
+        riskDistribution:
+          type: object
+          properties:
+            low:
+              type: integer
+            moderate:
+              type: integer
+            high:
+              type: integer
+            emergency:
+              type: integer
+        recentAssessments:
+          type: array
+          items:
+            $ref: "#/components/schemas/Assessment"
+        symptomTrend:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+              count:
+                type: integer

@@ -1,0 +1,2166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CareAI — Intelligent Healthcare Triage</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap"
+        rel="stylesheet" />
+    <style>
+        :root {
+            --teal: #0ef0c8;
+            --blue: #0a84ff;
+            --indigo: #5e5ce6;
+            --red: #ff3b3b;
+            --amber: #ffb340;
+            --glass: rgba(255, 255, 255, 0.06);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --bg: #050d1a;
+            --surface: #0c1829;
+            --surface2: #111f35;
+        }
+
+        * {
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: #e8f0fe;
+            overflow-x: hidden;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5 {
+            font-family: 'Syne', sans-serif;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--indigo);
+            border-radius: 3px;
+        }
+
+        /* Glass card */
+        .glass {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        /* Gradient text */
+        .grad-text {
+            background: linear-gradient(135deg, var(--teal) 0%, var(--blue) 50%, var(--indigo) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .grad-text-warm {
+            background: linear-gradient(135deg, #ff6b6b 0%, var(--amber) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Glow effects */
+        .glow-teal {
+            box-shadow: 0 0 30px rgba(14, 240, 200, 0.25);
+        }
+
+        .glow-blue {
+            box-shadow: 0 0 30px rgba(10, 132, 255, 0.3);
+        }
+
+        .glow-red {
+            box-shadow: 0 0 30px rgba(255, 59, 59, 0.4);
+        }
+
+        .text-glow-teal {
+            text-shadow: 0 0 20px rgba(14, 240, 200, 0.6);
+        }
+
+        /* Nav */
+        .navbar {
+            background: rgba(5, 13, 26, 0.85);
+            backdrop-filter: blur(24px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        /* Hero */
+        .hero-bg {
+            background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(10, 132, 255, 0.18) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 40% at 80% 50%, rgba(94, 92, 230, 0.15) 0%, transparent 60%),
+                radial-gradient(ellipse 40% 40% at 10% 60%, rgba(14, 240, 200, 0.1) 0%, transparent 60%),
+                var(--bg);
+        }
+
+        /* Grid overlay */
+        .grid-overlay {
+            background-image: linear-gradient(rgba(10, 132, 255, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(10, 132, 255, 0.04) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        /* Pulse ring */
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(14, 240, 200, 0.4);
+            }
+
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 15px rgba(14, 240, 200, 0);
+            }
+
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(14, 240, 200, 0);
+            }
+        }
+
+        .pulse-ring {
+            animation: pulse-ring 2s infinite;
+        }
+
+        @keyframes pulse-red {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 59, 59, 0.6);
+            }
+
+            70% {
+                box-shadow: 0 0 0 20px rgba(255, 59, 59, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 59, 59, 0);
+            }
+        }
+
+        .pulse-red {
+            animation: pulse-red 1.5s infinite;
+        }
+
+        /* Typing dots */
+        @keyframes blink {
+
+            0%,
+            80%,
+            100% {
+                opacity: 0
+            }
+
+            40% {
+                opacity: 1
+            }
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: var(--teal);
+            border-radius: 50%;
+            animation: blink 1.4s infinite;
+            display: inline-block;
+            margin: 0 2px;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        /* Waveform */
+        @keyframes wave {
+
+            0%,
+            100% {
+                height: 8px
+            }
+
+            50% {
+                height: 24px
+            }
+        }
+
+        .wave-bar {
+            width: 4px;
+            background: var(--teal);
+            border-radius: 2px;
+            margin: 0 2px;
+            animation: wave 0.8s ease-in-out infinite;
+            display: inline-block;
+        }
+
+        /* Float */
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px)
+            }
+
+            50% {
+                transform: translateY(-12px)
+            }
+        }
+
+        .float-anim {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        /* Flash emergency */
+        @keyframes flash-bg {
+
+            0%,
+            100% {
+                background: rgba(255, 59, 59, 0.08)
+            }
+
+            50% {
+                background: rgba(255, 59, 59, 0.2)
+            }
+        }
+
+        .flash-emergency {
+            animation: flash-bg 1.5s ease-in-out infinite;
+        }
+
+        /* Progress fill */
+        @keyframes fill-bar {
+            from {
+                width: 0
+            }
+
+            to {
+                width: var(--target-w)
+            }
+        }
+
+        .fill-anim {
+            animation: fill-bar 1.5s ease forwards;
+        }
+
+        /* Fade in up */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.7s ease forwards;
+            opacity: 0;
+        }
+
+        .delay-1 {
+            animation-delay: 0.1s
+        }
+
+        .delay-2 {
+            animation-delay: 0.2s
+        }
+
+        .delay-3 {
+            animation-delay: 0.3s
+        }
+
+        .delay-4 {
+            animation-delay: 0.4s
+        }
+
+        .delay-5 {
+            animation-delay: 0.5s
+        }
+
+        /* Slide in */
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0)
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0)
+            }
+        }
+
+        .slide-left {
+            animation: slideInLeft 0.5s ease forwards;
+        }
+
+        .slide-right {
+            animation: slideInRight 0.5s ease forwards;
+        }
+
+        /* Spinner */
+        @keyframes spin {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        .spin {
+            animation: spin 1s linear infinite;
+        }
+
+        /* Rotate heart */
+        @keyframes heartbeat {
+
+            0%,
+            100% {
+                transform: scale(1)
+            }
+
+            50% {
+                transform: scale(1.15)
+            }
+        }
+
+        .heartbeat {
+            animation: heartbeat 1s ease-in-out infinite;
+        }
+
+        /* Custom range slider */
+        input[type=range] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--teal), var(--blue));
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(14, 240, 200, 0.5);
+        }
+
+        /* Chat bubbles */
+        .chat-user {
+            background: linear-gradient(135deg, var(--blue), var(--indigo));
+            border-radius: 18px 18px 4px 18px;
+        }
+
+        .chat-ai {
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px 18px 18px 4px;
+        }
+
+        /* Section header */
+        .section-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(14, 240, 200, 0.1);
+            border: 1px solid rgba(14, 240, 200, 0.3);
+            color: var(--teal);
+            border-radius: 999px;
+            padding: 4px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+        }
+
+        /* Stat card */
+        .stat-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Doctor card */
+        .doctor-card:hover {
+            transform: translateY(-8px);
+        }
+
+        .doctor-card {
+            transition: transform 0.3s;
+        }
+
+        /* Risk gauge */
+        .gauge-track {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 999px;
+            height: 10px;
+            overflow: hidden;
+        }
+
+        .gauge-fill {
+            height: 100%;
+            border-radius: 999px;
+            transition: width 1.5s cubic-bezier(.17, .67, .3, 1.1);
+        }
+
+        /* Mood buttons */
+        .mood-btn {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .mood-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .mood-btn.active {
+            box-shadow: 0 0 20px rgba(14, 240, 200, 0.6);
+            transform: scale(1.2);
+        }
+
+        /* Wearable metric */
+        .metric-ring {
+            stroke-dasharray: 220;
+            stroke-dashoffset: 220;
+            transition: stroke-dashoffset 1.5s ease;
+        }
+
+        /* Scroll section fade */
+        .observe-fade {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .observe-fade.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Custom select */
+        select {
+            background: var(--surface2);
+            border: 1px solid var(--glass-border);
+            color: #e8f0fe;
+        }
+
+        select option {
+            background: var(--surface);
+        }
+
+        /* Table */
+        .tbl-row:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        /* Mobile menu */
+        #mobile-menu {
+            display: none;
+        }
+
+        #mobile-menu.open {
+            display: flex;
+        }
+    </style>
+</head>
+
+<body class="hero-bg grid-overlay">
+
+    <!-- ===================== NAVBAR ===================== -->
+    <nav class="navbar fixed top-0 left-0 right-0 z-50 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <!-- Logo -->
+            <a href="#home" class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center pulse-ring"
+                    style="background:linear-gradient(135deg,var(--teal),var(--blue))">
+                    <i class="fa-solid fa-heart-pulse text-white text-sm"></i>
+                </div>
+                <span class="text-xl font-bold" style="font-family:'Syne',sans-serif">Care<span
+                        class="grad-text">AI</span></span>
+            </a>
+            <!-- Desktop nav -->
+            <div class="hidden md:flex items-center gap-8">
+                <a href="#chatbot" class="text-sm text-gray-400 hover:text-white transition">Symptom Chat</a>
+                <a href="#assessment" class="text-sm text-gray-400 hover:text-white transition">Assessment</a>
+                <a href="#analytics" class="text-sm text-gray-400 hover:text-white transition">Analytics</a>
+                <a href="#telemedicine" class="text-sm text-gray-400 hover:text-white transition">Doctors</a>
+                <a href="#wearables" class="text-sm text-gray-400 hover:text-white transition">Wearables</a>
+            </div>
+            <!-- Right -->
+            <div class="hidden md:flex items-center gap-3">
+                <!-- Language selector -->
+                <select id="lang-select" onchange="switchLang(this.value)"
+                    class="text-xs rounded-lg px-3 py-2 outline-none cursor-pointer glass">
+                    <option value="en">🇺🇸 English</option>
+                    <option value="hi">🇮🇳 Hindi</option>
+                    <option value="kn">🇮🇳 Kannada</option>
+                </select>
+                <a href="#assessment" class="text-sm font-semibold px-5 py-2 rounded-xl transition glow-teal"
+                    style="background:linear-gradient(135deg,var(--teal),var(--blue));color:#050d1a">Start
+                    Assessment</a>
+            </div>
+            <!-- Hamburger -->
+            <button onclick="toggleMenu()" class="md:hidden text-gray-400 hover:text-white transition">
+                <i class="fa-solid fa-bars text-xl"></i>
+            </button>
+        </div>
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="flex-col gap-4 mt-4 pb-4 border-t border-white border-opacity-10 pt-4">
+            <a href="#chatbot" class="text-sm text-gray-400 hover:text-white" onclick="toggleMenu()">Symptom Chat</a>
+            <a href="#assessment" class="text-sm text-gray-400 hover:text-white" onclick="toggleMenu()">Assessment</a>
+            <a href="#analytics" class="text-sm text-gray-400 hover:text-white" onclick="toggleMenu()">Analytics</a>
+            <a href="#telemedicine" class="text-sm text-gray-400 hover:text-white" onclick="toggleMenu()">Doctors</a>
+            <a href="#wearables" class="text-sm text-gray-400 hover:text-white" onclick="toggleMenu()">Wearables</a>
+            <select onchange="switchLang(this.value)" class="text-xs rounded-lg px-3 py-2 w-full glass outline-none">
+                <option value="en">🇺🇸 English</option>
+                <option value="hi">🇮🇳 Hindi</option>
+                <option value="kn">🇮🇳 Kannada</option>
+            </select>
+            <a href="#assessment" class="text-sm font-semibold px-5 py-2 rounded-xl text-center"
+                style="background:linear-gradient(135deg,var(--teal),var(--blue));color:#050d1a"
+                onclick="toggleMenu()">Start Assessment</a>
+        </div>
+    </nav>
+
+    <!-- ===================== HERO ===================== -->
+    <section id="home" class="min-h-screen flex items-center pt-24 pb-16 px-6">
+        <div class="max-w-7xl mx-auto w-full">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <!-- Left content -->
+                <div>
+                    <div class="section-tag fade-in-up"><i class="fa-solid fa-circle-nodes"></i> AI-Powered Healthcare
+                    </div>
+                    <h1 class="text-5xl lg:text-7xl font-black leading-none mb-6 fade-in-up delay-1">
+                        Smarter<br /><span class="grad-text">Triage.</span><br />Faster Care.
+                    </h1>
+                    <p class="text-gray-400 text-lg max-w-md mb-8 fade-in-up delay-2" id="hero-subtitle">
+                        CareAI uses advanced artificial intelligence to analyze your symptoms, assess risk levels, and
+                        connect you with the right care — instantly.
+                    </p>
+                    <div class="flex flex-wrap gap-4 fade-in-up delay-3">
+                        <a href="#chatbot"
+                            class="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm glow-teal transition hover:scale-105"
+                            style="background:linear-gradient(135deg,var(--teal),var(--blue));color:#050d1a">
+                            <i class="fa-solid fa-comment-medical"></i> Chat with AI
+                        </a>
+                        <a href="#assessment"
+                            class="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm glass transition hover:bg-white hover:bg-opacity-10">
+                            <i class="fa-solid fa-clipboard-list"></i> Full Assessment
+                        </a>
+                    </div>
+                    <!-- Stats row -->
+                    <div class="flex gap-8 mt-12 fade-in-up delay-4">
+                        <div>
+                            <div class="text-3xl font-black grad-text">98.6%</div>
+                            <div class="text-xs text-gray-500 mt-1">Triage Accuracy</div>
+                        </div>
+                        <div class="w-px bg-white bg-opacity-10"></div>
+                        <div>
+                            <div class="text-3xl font-black grad-text">
+                                < 30s</div>
+                                    <div class="text-xs text-gray-500 mt-1">Assessment Time</div>
+                            </div>
+                            <div class="w-px bg-white bg-opacity-10"></div>
+                            <div>
+                                <div class="text-3xl font-black grad-text">2.4M+</div>
+                                <div class="text-xs text-gray-500 mt-1">Patients Triaged</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Right: animated dashboard preview -->
+                    <div class="float-anim fade-in-up delay-2">
+                        <div class="glass rounded-3xl p-6 glow-blue relative overflow-hidden">
+                            <!-- Header bar -->
+                            <div class="flex items-center justify-between mb-5">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                                    <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                                </div>
+                                <span class="text-xs text-gray-500">CareAI Live Dashboard</span>
+                                <div class="w-2 h-2 rounded-full bg-green-400" style="box-shadow:0 0 8px #4ade80"></div>
+                            </div>
+                            <!-- Risk indicator -->
+                            <div class="flex gap-4 mb-5">
+                                <div class="flex-1 rounded-2xl p-4"
+                                    style="background:rgba(14,240,200,0.1);border:1px solid rgba(14,240,200,0.2)">
+                                    <div class="text-xs text-gray-400 mb-1">Risk Score</div>
+                                    <div class="text-3xl font-black text-teal-300">72</div>
+                                    <div class="text-xs mt-1" style="color:var(--amber)"><i
+                                            class="fa-solid fa-triangle-exclamation mr-1"></i>Moderate</div>
+                                </div>
+                                <div class="flex-1 rounded-2xl p-4"
+                                    style="background:rgba(10,132,255,0.1);border:1px solid rgba(10,132,255,0.2)">
+                                    <div class="text-xs text-gray-400 mb-1">Heart Rate</div>
+                                    <div class="text-3xl font-black text-blue-300 heartbeat">89</div>
+                                    <div class="text-xs mt-1 text-gray-500">bpm</div>
+                                </div>
+                            </div>
+                            <!-- Symptom bars -->
+                            <div class="space-y-3 mb-5">
+                                <div>
+                                    <div class="flex justify-between text-xs text-gray-400 mb-1">
+                                        <span>Fever</span><span>High</span></div>
+                                    <div class="gauge-track">
+                                        <div class="gauge-fill"
+                                            style="width:82%;background:linear-gradient(90deg,#ff6b6b,var(--amber))">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs text-gray-400 mb-1">
+                                        <span>Fatigue</span><span>Moderate</span></div>
+                                    <div class="gauge-track">
+                                        <div class="gauge-fill"
+                                            style="width:58%;background:linear-gradient(90deg,var(--amber),var(--teal))">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs text-gray-400 mb-1">
+                                        <span>Inflammation</span><span>Low</span></div>
+                                    <div class="gauge-track">
+                                        <div class="gauge-fill"
+                                            style="width:35%;background:linear-gradient(90deg,var(--teal),var(--blue))">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Mini chart -->
+                            <canvas id="heroChart" height="80"></canvas>
+                            <!-- Watermark -->
+                            <div class="absolute -bottom-6 -right-6 w-40 h-40 rounded-full opacity-5"
+                                style="background:var(--indigo)"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </section>
+
+    <!-- ===================== AI CHATBOT ===================== -->
+    <section id="chatbot" class="py-20 px-6 observe-fade">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-10">
+                <div class="section-tag mx-auto"><i class="fa-solid fa-robot"></i> AI Symptom Assistant</div>
+                <h2 class="text-4xl font-black">Chat with <span class="grad-text">CareAI</span></h2>
+                <p class="text-gray-400 mt-3">Describe your symptoms in natural language and get instant AI triage
+                    guidance.</p>
+            </div>
+            <div class="glass rounded-3xl overflow-hidden glow-blue">
+                <!-- Chat header -->
+                <div class="flex items-center justify-between px-6 py-4 border-b"
+                    style="border-color:var(--glass-border);background:rgba(10,132,255,0.08)">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center"
+                            style="background:linear-gradient(135deg,var(--teal),var(--blue))">
+                            <i class="fa-solid fa-brain text-white"></i>
+                        </div>
+                        <div>
+                            <div class="font-semibold text-sm">CareAI Assistant</div>
+                            <div class="text-xs text-green-400 flex items-center gap-1"><span
+                                    class="w-2 h-2 bg-green-400 rounded-full inline-block"></span> Online · Triage Mode
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-gray-500">
+                        <i class="fa-solid fa-shield-halved" style="color:var(--teal)"></i> HIPAA Compliant
+                    </div>
+                </div>
+                <!-- Chat messages -->
+                <div id="chat-box" class="p-6 space-y-5 overflow-y-auto"
+                    style="height:380px;background:rgba(0,0,0,0.2)">
+                    <!-- AI greeting -->
+                    <div class="flex items-start gap-3 slide-left">
+                        <div class="w-8 h-8 rounded-xl flex-shrink-0 flex items-center justify-center text-xs"
+                            style="background:linear-gradient(135deg,var(--teal),var(--blue))">
+                            <i class="fa-solid fa-robot text-white"></i>
+                        </div>
+                        <div class="chat-ai p-4 max-w-sm text-sm text-gray-200">
+                            Hello! I'm CareAI, your intelligent health assistant. Please describe your symptoms, and
+                            I'll help assess your situation and recommend the right level of care. 🩺
+                        </div>
+                    </div>
+                </div>
+                <!-- Suggestions -->
+                <div class="px-6 py-3 flex gap-2 overflow-x-auto" id="chat-suggestions">
+                    <button onclick="sendSuggestion(this)"
+                        class="flex-shrink-0 text-xs px-3 py-2 rounded-lg glass hover:bg-white hover:bg-opacity-10 transition text-gray-300">I
+                        have a fever and headache</button>
+                    <button onclick="sendSuggestion(this)"
+                        class="flex-shrink-0 text-xs px-3 py-2 rounded-lg glass hover:bg-white hover:bg-opacity-10 transition text-gray-300">Chest
+                        pain and shortness of breath</button>
+                    <button onclick="sendSuggestion(this)"
+                        class="flex-shrink-0 text-xs px-3 py-2 rounded-lg glass hover:bg-white hover:bg-opacity-10 transition text-gray-300">Sore
+                        throat for 3 days</button>
+                    <button onclick="sendSuggestion(this)"
+                        class="flex-shrink-0 text-xs px-3 py-2 rounded-lg glass hover:bg-white hover:bg-opacity-10 transition text-gray-300">Severe
+                        stomach cramps</button>
+                </div>
+                <!-- Input -->
+                <div class="px-6 py-4 border-t" style="border-color:var(--glass-border)">
+                    <div class="flex items-center gap-3">
+                        <button onclick="toggleVoice()" id="voice-btn"
+                            class="w-10 h-10 rounded-xl flex items-center justify-center glass hover:bg-white hover:bg-opacity-10 transition text-gray-400 hover:text-white flex-shrink-0">
+                            <i class="fa-solid fa-microphone"></i>
+                        </button>
+                        <input id="chat-input" type="text" placeholder="Describe your symptoms..."
+                            class="flex-1 bg-transparent outline-none text-sm text-gray-200 placeholder-gray-600"
+                            onkeydown="if(event.key==='Enter')sendMessage()" />
+                        <button onclick="sendMessage()"
+                            class="w-10 h-10 rounded-xl flex items-center justify-center transition hover:scale-110 flex-shrink-0"
+                            style="background:linear-gradient(135deg,var(--teal),var(--blue))">
+                            <i class="fa-solid fa-paper-plane text-gray-900 text-sm"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== PATIENT FORM ===================== -->
+    <section id="assessment" class="py-20 px-6 observe-fade">
+        <div class="max-w-3xl mx-auto">
+            <div class="text-center mb-10">
+                <div class="section-tag mx-auto"><i class="fa-solid fa-notes-medical"></i> Patient Assessment</div>
+                <h2 class="text-4xl font-black">Complete <span class="grad-text">Health Profile</span></h2>
+                <p class="text-gray-400 mt-3">Fill out your details for a comprehensive AI-powered risk assessment.</p>
+            </div>
+            <div class="glass rounded-3xl p-8">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Name -->
+                    <div>
+                        <label class="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-2 block">Full
+                            Name</label>
+                        <input id="f-name" type="text" placeholder="e.g. Arjun Sharma"
+                            class="w-full glass rounded-xl px-4 py-3 text-sm outline-none focus:border-teal-400 transition placeholder-gray-600 bg-transparent" />
+                    </div>
+                    <!-- Age -->
+                    <div>
+                        <label
+                            class="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-2 block">Age</label>
+                        <input id="f-age" type="number" placeholder="Years" min="1" max="120"
+                            class="w-full glass rounded-xl px-4 py-3 text-sm outline-none transition placeholder-gray-600 bg-transparent" />
+                    </div>
+                    <!-- Gender -->
+                    <div>
+                        <label
+                            class="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-2 block">Gender</label>
+                        <select id="f-gender" class="w-full rounded-xl px-4 py-3 text-sm outline-none glass">
+                            <option value="">Select gender</option>
+                            <option>Male</option>
+                            <option>Female</option>
+                            <option>Non-binary</option>
+                            <option>Prefer not to say</option>
+                        </select>
+                    </div>
+                    <!-- Primary Symptom -->
+                    <div>
+                        <label class="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-2 block">Primary
+                            Symptom</label>
+                        <select id="f-symptom" class="w-full rounded-xl px-4 py-3 text-sm outline-none glass">
+                            <option value="">Select symptom</option>
+                            <option>Fever</option>
+                            <option>Chest Pain</option>
+                            <option>Headache</option>
+                            <option>Cough</option>
+                            <option>Shortness of Breath</option>
+                            <option>Abdominal Pain</option>
+                            <option>Dizziness</option>
+                            <option>Nausea/Vomiting</option>
+                            <option>Rash</option>
+                            <option>Fatigue</option>
+                        </select>
+                    </div>
+                    <!-- Additional symptoms -->
+                    <div class="md:col-span-2">
+                        <label
+                            class="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-2 block">Additional
+                            Symptoms</label>
+                        <textarea id="f-additional"
+                            placeholder="Describe other symptoms, when they started, and severity..."
+                            class="w-full glass rounded-xl px-4 py-3 text-sm outline-none transition placeholder-gray-600 bg-transparent resize-none"
+                            rows="3"></textarea>
+                    </div>
+                    <!-- Existing conditions -->
+                    <div>
+                        <label
+                            class="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-2 block">Pre-existing
+                            Conditions</label>
+                        <select id="f-conditions" class="w-full rounded-xl px-4 py-3 text-sm outline-none glass">
+                            <option value="">None</option>
+                            <option>Diabetes</option>
+                            <option>Hypertension</option>
+                            <option>Heart Disease</option>
+                            <option>Asthma</option>
+                            <option>Kidney Disease</option>
+                            <option>Cancer</option>
+                            <option>Immunodeficiency</option>
+                        </select>
+                    </div>
+                    <!-- Medications -->
+                    <div>
+                        <label class="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-2 block">Current
+                            Medications</label>
+                        <input id="f-meds" type="text" placeholder="e.g. Metformin, Aspirin"
+                            class="w-full glass rounded-xl px-4 py-3 text-sm outline-none transition placeholder-gray-600 bg-transparent" />
+                    </div>
+                    <!-- Pain slider -->
+                    <div class="md:col-span-2">
+                        <label class="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-3 block">
+                            Pain Severity: <span id="pain-val" class="font-black" style="color:var(--teal)">5</span>/10
+                        </label>
+                        <input type="range" id="pain-slider" min="1" max="10" value="5" oninput="updatePain(this.value)"
+                            class="w-full" />
+                        <div class="flex justify-between text-xs text-gray-600 mt-1">
+                            <span>Minimal</span><span>Moderate</span><span>Excruciating</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Submit -->
+                <button onclick="runAssessment()" id="assess-btn"
+                    class="w-full mt-8 py-4 rounded-2xl font-bold text-sm tracking-wide flex items-center justify-center gap-3 transition hover:scale-105 glow-teal"
+                    style="background:linear-gradient(135deg,var(--teal),var(--blue));color:#050d1a">
+                    <i class="fa-solid fa-microchip"></i> Run AI Risk Assessment
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== RISK DASHBOARD ===================== -->
+    <section id="risk-dashboard" class="py-20 px-6 observe-fade" style="display:none">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-10">
+                <div class="section-tag mx-auto"><i class="fa-solid fa-shield-virus"></i> AI Risk Assessment</div>
+                <h2 class="text-4xl font-black">Your <span class="grad-text">Risk Profile</span></h2>
+            </div>
+            <!-- Top row -->
+            <div class="grid md:grid-cols-3 gap-6 mb-8">
+                <!-- Score card -->
+                <div id="risk-score-card" class="glass rounded-3xl p-6 text-center stat-card">
+                    <div class="text-5xl font-black mb-2 grad-text" id="risk-score-num">--</div>
+                    <div class="text-sm text-gray-400 mb-4">Risk Score</div>
+                    <div id="risk-badge"
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold">
+                        <i class="fa-solid fa-circle-dot"></i> --
+                    </div>
+                </div>
+                <!-- Severity bars -->
+                <div class="glass rounded-3xl p-6 md:col-span-2 stat-card">
+                    <div class="font-semibold text-sm mb-5 text-gray-300">Risk Category Breakdown</div>
+                    <div class="space-y-4" id="risk-bars"></div>
+                </div>
+            </div>
+            <!-- Category cards -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div class="glass rounded-2xl p-4 text-center stat-card" style="border-color:rgba(74,222,128,0.3)">
+                    <i class="fa-solid fa-house-medical text-green-400 text-2xl mb-2"></i>
+                    <div class="text-xs text-gray-400">Low Risk</div>
+                    <div class="text-lg font-black text-green-400">0–30</div>
+                </div>
+                <div class="glass rounded-2xl p-4 text-center stat-card" style="border-color:rgba(255,179,64,0.3)">
+                    <i class="fa-solid fa-circle-exclamation text-yellow-400 text-2xl mb-2"></i>
+                    <div class="text-xs text-gray-400">Moderate</div>
+                    <div class="text-lg font-black text-yellow-400">31–60</div>
+                </div>
+                <div class="glass rounded-2xl p-4 text-center stat-card" style="border-color:rgba(251,146,60,0.3)">
+                    <i class="fa-solid fa-triangle-exclamation text-orange-400 text-2xl mb-2"></i>
+                    <div class="text-xs text-gray-400">High Risk</div>
+                    <div class="text-lg font-black text-orange-400">61–80</div>
+                </div>
+                <div class="glass rounded-2xl p-4 text-center stat-card" style="border-color:rgba(255,59,59,0.3)">
+                    <i class="fa-solid fa-kit-medical text-red-400 text-2xl mb-2"></i>
+                    <div class="text-xs text-gray-400">Emergency</div>
+                    <div class="text-lg font-black text-red-400">81–100</div>
+                </div>
+            </div>
+            <!-- AI insight -->
+            <div class="glass rounded-3xl p-6">
+                <div class="flex items-center gap-3 mb-4">
+                    <i class="fa-solid fa-brain" style="color:var(--teal)"></i>
+                    <span class="font-semibold">AI Clinical Insight</span>
+                </div>
+                <p id="ai-insight" class="text-gray-300 text-sm leading-relaxed"></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== EMERGENCY ALERT ===================== -->
+    <section id="emergency-section" class="py-10 px-6 observe-fade" style="display:none">
+        <div class="max-w-3xl mx-auto">
+            <div class="rounded-3xl p-8 flash-emergency border-2" style="border-color:rgba(255,59,59,0.5)">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center pulse-red flex-shrink-0"
+                        style="background:rgba(255,59,59,0.2);border:2px solid rgba(255,59,59,0.6)">
+                        <i class="fa-solid fa-triangle-exclamation text-red-400 text-2xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-black text-red-400">⚠ Emergency Alert</h3>
+                        <p class="text-sm text-gray-400">Immediate medical attention recommended</p>
+                    </div>
+                    <div class="ml-auto">
+                        <div class="text-xs text-red-400 font-bold tracking-widest animate-pulse">CRITICAL</div>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-3 gap-4">
+                    <div class="rounded-2xl p-4"
+                        style="background:rgba(255,59,59,0.1);border:1px solid rgba(255,59,59,0.2)">
+                        <i class="fa-solid fa-phone-volume text-red-400 mb-2"></i>
+                        <div class="font-semibold text-sm">Call Emergency</div>
+                        <div class="text-2xl font-black text-red-400 mt-1">112</div>
+                    </div>
+                    <div class="rounded-2xl p-4"
+                        style="background:rgba(255,59,59,0.1);border:1px solid rgba(255,59,59,0.2)">
+                        <i class="fa-solid fa-location-crosshairs text-red-400 mb-2"></i>
+                        <div class="font-semibold text-sm">Nearest ER</div>
+                        <div class="text-xs text-gray-400 mt-1">Manipal Hospital — 1.2km</div>
+                    </div>
+                    <div class="rounded-2xl p-4"
+                        style="background:rgba(255,59,59,0.1);border:1px solid rgba(255,59,59,0.2)">
+                        <i class="fa-solid fa-person-running text-red-400 mb-2"></i>
+                        <div class="font-semibold text-sm">Do NOT Drive</div>
+                        <div class="text-xs text-gray-400 mt-1">Call ambulance immediately</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== CARE RECOMMENDATIONS ===================== -->
+    <section id="care-recommendations" class="py-20 px-6 observe-fade" style="display:none">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-10">
+                <div class="section-tag mx-auto"><i class="fa-solid fa-hand-holding-medical"></i> Care Pathways</div>
+                <h2 class="text-4xl font-black"><span class="grad-text">Recommended</span> Actions</h2>
+            </div>
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Home Care -->
+                <div class="glass rounded-3xl p-6 stat-card" id="care-home">
+                    <div class="w-14 h-14 rounded-2xl mb-4 flex items-center justify-center"
+                        style="background:rgba(74,222,128,0.15);border:1px solid rgba(74,222,128,0.3)">
+                        <i class="fa-solid fa-house-chimney-medical text-green-400 text-2xl"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2 text-green-400">Home Care</h3>
+                    <p class="text-sm text-gray-400 mb-4">Rest and monitor symptoms with these self-care measures.</p>
+                    <ul class="space-y-2 text-sm text-gray-300">
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-400 text-xs"></i>
+                            Stay hydrated (2–3L water/day)</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-400 text-xs"></i>
+                            Take prescribed OTC medication</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-400 text-xs"></i>
+                            Rest for 24–48 hours</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-400 text-xs"></i>
+                            Monitor temperature 4x/day</li>
+                    </ul>
+                </div>
+                <!-- Clinic -->
+                <div class="glass rounded-3xl p-6 stat-card" id="care-clinic">
+                    <div class="w-14 h-14 rounded-2xl mb-4 flex items-center justify-center"
+                        style="background:rgba(255,179,64,0.15);border:1px solid rgba(255,179,64,0.3)">
+                        <i class="fa-solid fa-stethoscope text-yellow-400 text-2xl"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2 text-yellow-400">Clinic Visit</h3>
+                    <p class="text-sm text-gray-400 mb-4">Schedule an appointment with your primary care physician.</p>
+                    <ul class="space-y-2 text-sm text-gray-300">
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-yellow-400 text-xs"></i>
+                            Book appointment within 24h</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-yellow-400 text-xs"></i>
+                            Blood panel recommended</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-yellow-400 text-xs"></i>
+                            Bring medication list</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-yellow-400 text-xs"></i>
+                            Telemedicine available</li>
+                    </ul>
+                    <button onclick="document.getElementById('telemedicine').scrollIntoView({behavior:'smooth'})"
+                        class="mt-4 w-full py-2 rounded-xl text-xs font-bold transition hover:scale-105"
+                        style="background:rgba(255,179,64,0.2);border:1px solid rgba(255,179,64,0.4);color:var(--amber)">
+                        Book Now <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </button>
+                </div>
+                <!-- ER -->
+                <div class="glass rounded-3xl p-6 stat-card" id="care-er">
+                    <div class="w-14 h-14 rounded-2xl mb-4 flex items-center justify-center"
+                        style="background:rgba(255,59,59,0.15);border:1px solid rgba(255,59,59,0.3)">
+                        <i class="fa-solid fa-truck-medical text-red-400 text-2xl"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2 text-red-400">Emergency Room</h3>
+                    <p class="text-sm text-gray-400 mb-4">Go to the ER immediately — do not delay treatment.</p>
+                    <ul class="space-y-2 text-sm text-gray-300">
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-red-400 text-xs"></i> Call
+                            112 or go to ER now</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-red-400 text-xs"></i> Do
+                            not eat or drink</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-red-400 text-xs"></i> Bring
+                            ID and insurance card</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-red-400 text-xs"></i>
+                            Inform family/caregiver</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== ANALYTICS ===================== -->
+    <section id="analytics" class="py-20 px-6 observe-fade">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-10">
+                <div class="section-tag mx-auto"><i class="fa-solid fa-chart-line"></i> Health Analytics</div>
+                <h2 class="text-4xl font-black">Your <span class="grad-text">Health Dashboard</span></h2>
+            </div>
+            <!-- Stats cards -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div class="glass rounded-2xl p-5 stat-card">
+                    <div class="flex justify-between items-start mb-3">
+                        <i class="fa-solid fa-clipboard-check text-teal-400"></i>
+                        <span class="text-xs px-2 py-1 rounded-full"
+                            style="background:rgba(74,222,128,0.15);color:#4ade80">+12%</span>
+                    </div>
+                    <div class="text-2xl font-black mb-1">24</div>
+                    <div class="text-xs text-gray-500">Total Assessments</div>
+                </div>
+                <div class="glass rounded-2xl p-5 stat-card">
+                    <div class="flex justify-between items-start mb-3">
+                        <i class="fa-solid fa-heart-pulse text-red-400 heartbeat"></i>
+                        <span class="text-xs px-2 py-1 rounded-full"
+                            style="background:rgba(74,222,128,0.15);color:#4ade80">Normal</span>
+                    </div>
+                    <div class="text-2xl font-black mb-1">72</div>
+                    <div class="text-xs text-gray-500">Avg Heart Rate</div>
+                </div>
+                <div class="glass rounded-2xl p-5 stat-card">
+                    <div class="flex justify-between items-start mb-3">
+                        <i class="fa-solid fa-circle-radiation text-blue-400"></i>
+                        <span class="text-xs px-2 py-1 rounded-full"
+                            style="background:rgba(74,222,128,0.15);color:#4ade80">98.2%</span>
+                    </div>
+                    <div class="text-2xl font-black mb-1">98</div>
+                    <div class="text-xs text-gray-500">SpO₂ Average</div>
+                </div>
+                <div class="glass rounded-2xl p-5 stat-card">
+                    <div class="flex justify-between items-start mb-3">
+                        <i class="fa-solid fa-face-smile text-yellow-400"></i>
+                        <span class="text-xs px-2 py-1 rounded-full"
+                            style="background:rgba(255,179,64,0.15);color:var(--amber)">Fair</span>
+                    </div>
+                    <div class="text-2xl font-black mb-1">7.2</div>
+                    <div class="text-xs text-gray-500">Wellness Score</div>
+                </div>
+            </div>
+            <!-- Charts -->
+            <div class="grid md:grid-cols-2 gap-6 mb-8">
+                <div class="glass rounded-3xl p-6 stat-card">
+                    <div class="font-semibold text-sm mb-4 text-gray-300">Symptom History (7 Days)</div>
+                    <canvas id="symptomChart" height="200"></canvas>
+                </div>
+                <div class="glass rounded-3xl p-6 stat-card">
+                    <div class="font-semibold text-sm mb-4 text-gray-300">Risk Score Trend</div>
+                    <canvas id="riskChart" height="200"></canvas>
+                </div>
+            </div>
+            <!-- Assessments table -->
+            <div class="glass rounded-3xl overflow-hidden">
+                <div class="px-6 py-4 border-b flex items-center justify-between"
+                    style="border-color:var(--glass-border)">
+                    <span class="font-semibold text-sm">Recent Assessments</span>
+                    <span class="text-xs text-gray-500">Last 30 days</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="text-xs text-gray-500 uppercase tracking-wider"
+                                style="background:rgba(255,255,255,0.02)">
+                                <th class="px-6 py-3 text-left">Date</th>
+                                <th class="px-6 py-3 text-left">Symptom</th>
+                                <th class="px-6 py-3 text-left">Risk Score</th>
+                                <th class="px-6 py-3 text-left">Level</th>
+                                <th class="px-6 py-3 text-left">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="tbl-row border-t" style="border-color:rgba(255,255,255,0.04)">
+                                <td class="px-6 py-4 text-gray-400">May 14, 2026</td>
+                                <td class="px-6 py-4">Fever, Headache</td>
+                                <td class="px-6 py-4"><span class="font-bold" style="color:var(--amber)">67</span></td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full text-xs"
+                                        style="background:rgba(255,179,64,0.15);color:var(--amber)">Moderate</span></td>
+                                <td class="px-6 py-4 text-gray-400">Clinic Visit</td>
+                            </tr>
+                            <tr class="tbl-row border-t" style="border-color:rgba(255,255,255,0.04)">
+                                <td class="px-6 py-4 text-gray-400">May 10, 2026</td>
+                                <td class="px-6 py-4">Sore Throat</td>
+                                <td class="px-6 py-4"><span class="font-bold text-green-400">28</span></td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full text-xs"
+                                        style="background:rgba(74,222,128,0.15);color:#4ade80">Low</span></td>
+                                <td class="px-6 py-4 text-gray-400">Home Care</td>
+                            </tr>
+                            <tr class="tbl-row border-t" style="border-color:rgba(255,255,255,0.04)">
+                                <td class="px-6 py-4 text-gray-400">Apr 28, 2026</td>
+                                <td class="px-6 py-4">Chest Pain</td>
+                                <td class="px-6 py-4"><span class="font-bold text-red-400">88</span></td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full text-xs"
+                                        style="background:rgba(255,59,59,0.15);color:#f87171">Emergency</span></td>
+                                <td class="px-6 py-4 text-gray-400">ER Visit</td>
+                            </tr>
+                            <tr class="tbl-row border-t" style="border-color:rgba(255,255,255,0.04)">
+                                <td class="px-6 py-4 text-gray-400">Apr 15, 2026</td>
+                                <td class="px-6 py-4">Fatigue, Cough</td>
+                                <td class="px-6 py-4"><span class="font-bold text-orange-400">54</span></td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full text-xs"
+                                        style="background:rgba(251,146,60,0.15);color:#fb923c">High</span></td>
+                                <td class="px-6 py-4 text-gray-400">Clinic Visit</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== VOICE ASSISTANT ===================== -->
+    <section id="voice-section" class="py-20 px-6 observe-fade">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-10">
+                <div class="section-tag mx-auto"><i class="fa-solid fa-waveform"></i> Voice Assistant</div>
+                <h2 class="text-4xl font-black">Speak to <span class="grad-text">CareAI</span></h2>
+            </div>
+            <div class="glass rounded-3xl p-8 flex flex-col md:flex-row items-center gap-8">
+                <!-- Mic -->
+                <div class="flex flex-col items-center gap-4">
+                    <button onclick="toggleVoicePanel()" id="main-mic-btn"
+                        class="w-28 h-28 rounded-full flex items-center justify-center transition hover:scale-110"
+                        style="background:linear-gradient(135deg,var(--teal),var(--blue));box-shadow:0 0 40px rgba(14,240,200,0.4)">
+                        <i class="fa-solid fa-microphone text-4xl text-gray-900"></i>
+                    </button>
+                    <div id="voice-status" class="text-sm text-gray-400">Tap to speak</div>
+                    <!-- Waveform -->
+                    <div id="waveform" class="flex items-center justify-center h-10" style="display:none!important">
+                        <span class="wave-bar"></span>
+                        <span class="wave-bar" style="animation-delay:0.1s"></span>
+                        <span class="wave-bar" style="animation-delay:0.2s"></span>
+                        <span class="wave-bar" style="animation-delay:0.3s"></span>
+                        <span class="wave-bar" style="animation-delay:0.4s"></span>
+                        <span class="wave-bar" style="animation-delay:0.15s"></span>
+                        <span class="wave-bar" style="animation-delay:0.25s"></span>
+                    </div>
+                </div>
+                <!-- Panel -->
+                <div class="flex-1">
+                    <div class="font-semibold mb-4">Voice Commands</div>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3 rounded-xl p-3"
+                            style="background:rgba(14,240,200,0.06);border:1px solid rgba(14,240,200,0.15)">
+                            <i class="fa-solid fa-quote-left text-teal-400 text-sm"></i>
+                            <span class="text-sm text-gray-300">"I have a headache and fever since yesterday"</span>
+                        </div>
+                        <div class="flex items-center gap-3 rounded-xl p-3"
+                            style="background:rgba(10,132,255,0.06);border:1px solid rgba(10,132,255,0.15)">
+                            <i class="fa-solid fa-quote-left text-blue-400 text-sm"></i>
+                            <span class="text-sm text-gray-300">"Show me my health report"</span>
+                        </div>
+                        <div class="flex items-center gap-3 rounded-xl p-3"
+                            style="background:rgba(94,92,230,0.06);border:1px solid rgba(94,92,230,0.15)">
+                            <i class="fa-solid fa-quote-left text-indigo-400 text-sm"></i>
+                            <span class="text-sm text-gray-300">"Book an appointment with a cardiologist"</span>
+                        </div>
+                    </div>
+                    <div id="voice-transcript" class="mt-4 p-4 rounded-xl text-sm text-gray-300 hidden"
+                        style="background:rgba(255,255,255,0.05);border:1px solid var(--glass-border)">
+                        <i class="fa-solid fa-robot mr-2" style="color:var(--teal)"></i>
+                        <span id="voice-text"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== AI HEALTH REPORT ===================== -->
+    <section id="health-report" class="py-20 px-6 observe-fade" style="display:none">
+        <div class="max-w-3xl mx-auto">
+            <div class="text-center mb-10">
+                <div class="section-tag mx-auto"><i class="fa-solid fa-file-medical"></i> AI Health Report</div>
+                <h2 class="text-4xl font-black">Your <span class="grad-text">Clinical Report</span></h2>
+            </div>
+            <div class="glass rounded-3xl overflow-hidden">
+                <!-- Report header -->
+                <div class="px-8 py-6 flex items-center justify-between"
+                    style="background:linear-gradient(135deg,rgba(14,240,200,0.1),rgba(10,132,255,0.1));border-bottom:1px solid var(--glass-border)">
+                    <div>
+                        <div class="text-xl font-black grad-text">CareAI Medical Report</div>
+                        <div class="text-xs text-gray-400 mt-1" id="report-timestamp"></div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-seal-exclamation text-teal-400"></i>
+                        <span class="text-xs text-teal-400 font-semibold">AI GENERATED</span>
+                    </div>
+                </div>
+                <!-- Report body -->
+                <div class="p-8 space-y-6">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <div class="text-xs text-gray-500 uppercase tracking-wider mb-2">Patient</div>
+                            <div class="font-semibold" id="rep-name">—</div>
+                        </div>
+                        <div>
+                            <div class="text-xs text-gray-500 uppercase tracking-wider mb-2">Age / Gender</div>
+                            <div class="font-semibold" id="rep-age-gender">—</div>
+                        </div>
+                        <div>
+                            <div class="text-xs text-gray-500 uppercase tracking-wider mb-2">Primary Symptom</div>
+                            <div class="font-semibold" id="rep-symptom">—</div>
+                        </div>
+                        <div>
+                            <div class="text-xs text-gray-500 uppercase tracking-wider mb-2">Pain Level</div>
+                            <div class="font-semibold" id="rep-pain">—</div>
+                        </div>
+                    </div>
+                    <div class="border-t" style="border-color:var(--glass-border)"></div>
+                    <div>
+                        <div class="text-xs text-gray-500 uppercase tracking-wider mb-3">AI Risk Assessment</div>
+                        <div class="flex items-center gap-4">
+                            <div class="text-4xl font-black grad-text" id="rep-score">—</div>
+                            <div id="rep-level-badge" class="px-4 py-2 rounded-full text-sm font-bold">—</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-500 uppercase tracking-wider mb-3">AI Recommendations</div>
+                        <div id="rep-recommendations" class="text-sm text-gray-300 leading-relaxed">—</div>
+                    </div>
+                    <div class="p-4 rounded-2xl text-xs text-gray-500" style="background:rgba(255,255,255,0.04)">
+                        <i class="fa-solid fa-circle-info mr-2"></i>
+                        This report is generated by AI and is not a substitute for professional medical advice. Always
+                        consult a licensed physician for diagnosis and treatment.
+                    </div>
+                </div>
+                <!-- Actions -->
+                <div class="px-8 py-5 border-t flex gap-4 flex-wrap" style="border-color:var(--glass-border)">
+                    <button onclick="printReport()"
+                        class="flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-semibold glass hover:bg-white hover:bg-opacity-10 transition">
+                        <i class="fa-solid fa-print"></i> Print
+                    </button>
+                    <button onclick="shareReport()"
+                        class="flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-semibold glass hover:bg-white hover:bg-opacity-10 transition">
+                        <i class="fa-solid fa-share-nodes"></i> Share
+                    </button>
+                    <button
+                        class="flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-semibold transition hover:scale-105"
+                        style="background:linear-gradient(135deg,var(--teal),var(--blue));color:#050d1a">
+                        <i class="fa-solid fa-download"></i> Download PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== TELEMEDICINE ===================== -->
+    <section id="telemedicine" class="py-20 px-6 observe-fade">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-10">
+                <div class="section-tag mx-auto"><i class="fa-solid fa-video"></i> Telemedicine</div>
+                <h2 class="text-4xl font-black">Connect with <span class="grad-text">Specialists</span></h2>
+                <p class="text-gray-400 mt-3">Board-certified physicians available 24/7 for video consultations.</p>
+            </div>
+            <!-- Doctor cards -->
+            <div class="grid md:grid-cols-3 gap-6 mb-10">
+                <!-- Doctor 1 -->
+                <div class="glass rounded-3xl p-6 doctor-card">
+                    <div class="flex items-center gap-4 mb-5">
+                        <div class="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0"
+                            style="background:linear-gradient(135deg,rgba(10,132,255,0.3),rgba(94,92,230,0.3))">👨‍⚕️
+                        </div>
+                        <div>
+                            <div class="font-bold">Dr. Rahul Mehta</div>
+                            <div class="text-xs text-gray-400">Cardiologist · 14 yrs</div>
+                            <div class="flex items-center gap-1 mt-1">
+                                <i class="fa-solid fa-star text-yellow-400 text-xs"></i>
+                                <span class="text-xs font-semibold">4.9</span>
+                                <span class="text-xs text-gray-500">(312 reviews)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="w-2 h-2 bg-green-400 rounded-full"></span>
+                        <span class="text-xs text-green-400">Available Now</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="startVideoCall('Dr. Rahul Mehta')"
+                            class="flex-1 py-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 glow-blue transition hover:scale-105"
+                            style="background:linear-gradient(135deg,var(--blue),var(--indigo))">
+                            <i class="fa-solid fa-video"></i> Video Call
+                        </button>
+                        <button
+                            class="w-10 h-9 rounded-xl glass hover:bg-white hover:bg-opacity-10 transition flex items-center justify-center">
+                            <i class="fa-solid fa-calendar text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- Doctor 2 -->
+                <div class="glass rounded-3xl p-6 doctor-card">
+                    <div class="flex items-center gap-4 mb-5">
+                        <div class="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0"
+                            style="background:linear-gradient(135deg,rgba(14,240,200,0.3),rgba(10,132,255,0.3))">👩‍⚕️
+                        </div>
+                        <div>
+                            <div class="font-bold">Dr. Priya Nair</div>
+                            <div class="text-xs text-gray-400">Neurologist · 9 yrs</div>
+                            <div class="flex items-center gap-1 mt-1">
+                                <i class="fa-solid fa-star text-yellow-400 text-xs"></i>
+                                <span class="text-xs font-semibold">4.8</span>
+                                <span class="text-xs text-gray-500">(198 reviews)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="w-2 h-2 bg-green-400 rounded-full"></span>
+                        <span class="text-xs text-green-400">Available Now</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="startVideoCall('Dr. Priya Nair')"
+                            class="flex-1 py-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 glow-blue transition hover:scale-105"
+                            style="background:linear-gradient(135deg,var(--blue),var(--indigo))">
+                            <i class="fa-solid fa-video"></i> Video Call
+                        </button>
+                        <button
+                            class="w-10 h-9 rounded-xl glass hover:bg-white hover:bg-opacity-10 transition flex items-center justify-center">
+                            <i class="fa-solid fa-calendar text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- Doctor 3 -->
+                <div class="glass rounded-3xl p-6 doctor-card">
+                    <div class="flex items-center gap-4 mb-5">
+                        <div class="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0"
+                            style="background:linear-gradient(135deg,rgba(255,179,64,0.3),rgba(255,107,107,0.3))">🧑‍⚕️
+                        </div>
+                        <div>
+                            <div class="font-bold">Dr. Aarav Gupta</div>
+                            <div class="text-xs text-gray-400">Gen. Medicine · 7 yrs</div>
+                            <div class="flex items-center gap-1 mt-1">
+                                <i class="fa-solid fa-star text-yellow-400 text-xs"></i>
+                                <span class="text-xs font-semibold">4.7</span>
+                                <span class="text-xs text-gray-500">(154 reviews)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="w-2 h-2 bg-yellow-400 rounded-full"></span>
+                        <span class="text-xs text-yellow-400">In 15 mins</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="startVideoCall('Dr. Aarav Gupta')"
+                            class="flex-1 py-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition hover:scale-105"
+                            style="background:linear-gradient(135deg,var(--amber),#ff6b6b)">
+                            <i class="fa-solid fa-calendar-check"></i> Book Now
+                        </button>
+                        <button
+                            class="w-10 h-9 rounded-xl glass hover:bg-white hover:bg-opacity-10 transition flex items-center justify-center">
+                            <i class="fa-solid fa-calendar text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Video consultation mockup -->
+            <div id="video-modal" class="hidden glass rounded-3xl overflow-hidden">
+                <div class="flex items-center justify-between px-6 py-4"
+                    style="background:rgba(0,0,0,0.3);border-bottom:1px solid var(--glass-border)">
+                    <div class="flex items-center gap-3">
+                        <div class="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                        <span class="text-sm font-semibold" id="video-doc-name">Video Consultation</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs text-gray-400" id="call-timer">00:00</span>
+                        <button onclick="endCall()"
+                            class="px-4 py-1.5 rounded-xl text-xs font-bold transition hover:scale-105"
+                            style="background:rgba(255,59,59,0.8)">End Call</button>
+                    </div>
+                </div>
+                <div class="relative" style="background:#0a0f1e;height:280px">
+                    <!-- Remote -->
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <div class="text-center">
+                            <div class="text-6xl mb-3">👨‍⚕️</div>
+                            <div class="flex items-center justify-center gap-2">
+                                <span class="wave-bar" style="background:var(--blue)"></span>
+                                <span class="wave-bar" style="background:var(--blue);animation-delay:0.1s"></span>
+                                <span class="wave-bar" style="background:var(--blue);animation-delay:0.2s"></span>
+                                <span class="wave-bar" style="background:var(--blue);animation-delay:0.3s"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Local (PiP) -->
+                    <div class="absolute bottom-4 right-4 w-24 h-16 rounded-xl flex items-center justify-center"
+                        style="background:#1a2540;border:2px solid var(--glass-border)">
+                        <span class="text-2xl">🙂</span>
+                    </div>
+                    <!-- Controls overlay -->
+                    <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-3">
+                        <button
+                            class="w-10 h-10 rounded-full flex items-center justify-center glass hover:bg-white hover:bg-opacity-20 transition">
+                            <i class="fa-solid fa-microphone text-sm"></i>
+                        </button>
+                        <button
+                            class="w-10 h-10 rounded-full flex items-center justify-center glass hover:bg-white hover:bg-opacity-20 transition">
+                            <i class="fa-solid fa-video text-sm"></i>
+                        </button>
+                        <button onclick="endCall()"
+                            class="w-10 h-10 rounded-full flex items-center justify-center transition"
+                            style="background:#ff3b3b">
+                            <i class="fa-solid fa-phone-slash text-sm"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== WEARABLES ===================== -->
+    <section id="wearables" class="py-20 px-6 observe-fade">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-10">
+                <div class="section-tag mx-auto"><i class="fa-solid fa-watch"></i> Wearable Monitoring</div>
+                <h2 class="text-4xl font-black">Live <span class="grad-text">Health Vitals</span></h2>
+                <p class="text-gray-400 mt-3">Real-time data synced from your wearable devices.</p>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <!-- Heart Rate -->
+                <div class="glass rounded-3xl p-6 stat-card text-center">
+                    <svg width="80" height="80" viewBox="0 0 80 80" class="mx-auto mb-3">
+                        <circle cx="40" cy="40" r="35" fill="none" stroke="rgba(255,59,59,0.15)" stroke-width="6" />
+                        <circle cx="40" cy="40" r="35" fill="none" stroke="#ff3b3b" stroke-width="6"
+                            stroke-linecap="round" class="metric-ring"
+                            style="transform:rotate(-90deg);transform-origin:center;stroke-dashoffset:50;transition:stroke-dashoffset 2s ease" />
+                    </svg>
+                    <div class="text-3xl font-black text-red-400 heartbeat" id="hr-val">89</div>
+                    <div class="text-xs text-gray-400 mt-1">BPM</div>
+                    <div class="text-xs font-semibold text-green-400 mt-2">Normal</div>
+                    <div class="text-xs text-gray-500">Heart Rate</div>
+                </div>
+                <!-- SpO2 -->
+                <div class="glass rounded-3xl p-6 stat-card text-center">
+                    <svg width="80" height="80" viewBox="0 0 80 80" class="mx-auto mb-3">
+                        <circle cx="40" cy="40" r="35" fill="none" stroke="rgba(10,132,255,0.15)" stroke-width="6" />
+                        <circle cx="40" cy="40" r="35" fill="none" stroke="var(--blue)" stroke-width="6"
+                            stroke-linecap="round" class="metric-ring"
+                            style="transform:rotate(-90deg);transform-origin:center;stroke-dashoffset:15" />
+                    </svg>
+                    <div class="text-3xl font-black text-blue-400" id="spo2-val">98%</div>
+                    <div class="text-xs text-gray-400 mt-1">SpO₂</div>
+                    <div class="text-xs font-semibold text-green-400 mt-2">Excellent</div>
+                    <div class="text-xs text-gray-500">Oxygen Level</div>
+                </div>
+                <!-- Blood Pressure -->
+                <div class="glass rounded-3xl p-6 stat-card text-center">
+                    <svg width="80" height="80" viewBox="0 0 80 80" class="mx-auto mb-3">
+                        <circle cx="40" cy="40" r="35" fill="none" stroke="rgba(255,179,64,0.15)" stroke-width="6" />
+                        <circle cx="40" cy="40" r="35" fill="none" stroke="var(--amber)" stroke-width="6"
+                            stroke-linecap="round" class="metric-ring"
+                            style="transform:rotate(-90deg);transform-origin:center;stroke-dashoffset:60" />
+                    </svg>
+                    <div class="text-2xl font-black text-yellow-400 leading-tight">120<span class="text-sm">/</span>80
+                    </div>
+                    <div class="text-xs text-gray-400 mt-1">mmHg</div>
+                    <div class="text-xs font-semibold text-green-400 mt-2">Normal</div>
+                    <div class="text-xs text-gray-500">Blood Pressure</div>
+                </div>
+                <!-- Temperature -->
+                <div class="glass rounded-3xl p-6 stat-card text-center">
+                    <svg width="80" height="80" viewBox="0 0 80 80" class="mx-auto mb-3">
+                        <circle cx="40" cy="40" r="35" fill="none" stroke="rgba(14,240,200,0.15)" stroke-width="6" />
+                        <circle cx="40" cy="40" r="35" fill="none" stroke="var(--teal)" stroke-width="6"
+                            stroke-linecap="round" class="metric-ring"
+                            style="transform:rotate(-90deg);transform-origin:center;stroke-dashoffset:100" />
+                    </svg>
+                    <div class="text-3xl font-black text-teal-300" id="temp-val">37.2°</div>
+                    <div class="text-xs text-gray-400 mt-1">Celsius</div>
+                    <div class="text-xs font-semibold text-green-400 mt-2">Normal</div>
+                    <div class="text-xs text-gray-500">Temperature</div>
+                </div>
+            </div>
+            <!-- Live update note -->
+            <div class="mt-6 flex items-center justify-center gap-2 text-xs text-gray-500">
+                <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                Live data syncing · Last updated: <span id="last-updated">just now</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== MENTAL HEALTH ===================== -->
+    <section id="mental-health" class="py-20 px-6 observe-fade">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-10">
+                <div class="section-tag mx-auto"><i class="fa-solid fa-brain"></i> Mental Wellness</div>
+                <h2 class="text-4xl font-black">Mind &amp; <span class="grad-text">Wellness</span></h2>
+            </div>
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Mood tracker -->
+                <div class="glass rounded-3xl p-6 stat-card">
+                    <div class="font-semibold mb-5">How are you feeling?</div>
+                    <div class="flex justify-around mb-5">
+                        <button class="mood-btn text-3xl" onclick="selectMood(this,'😄','Excellent')"
+                            title="Excellent">😄</button>
+                        <button class="mood-btn text-3xl" onclick="selectMood(this,'😊','Good')"
+                            title="Good">😊</button>
+                        <button class="mood-btn text-3xl" onclick="selectMood(this,'😐','Neutral')"
+                            title="Neutral">😐</button>
+                        <button class="mood-btn text-3xl" onclick="selectMood(this,'😔','Low')" title="Low">😔</button>
+                        <button class="mood-btn text-3xl" onclick="selectMood(this,'😟','Anxious')"
+                            title="Anxious">😟</button>
+                    </div>
+                    <div id="mood-text" class="text-center text-sm text-gray-400">Tap a mood to log it</div>
+                    <canvas id="moodChart" class="mt-4" height="100"></canvas>
+                </div>
+                <!-- Stress meter -->
+                <div class="glass rounded-3xl p-6 stat-card">
+                    <div class="font-semibold mb-5">Stress Level</div>
+                    <div class="flex justify-center mb-4">
+                        <div class="relative w-36 h-36">
+                            <svg viewBox="0 0 100 100" class="w-full h-full -rotate-90">
+                                <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.08)"
+                                    stroke-width="10" />
+                                <circle cx="50" cy="50" r="40" fill="none" stroke="url(#stressGrad)" stroke-width="10"
+                                    stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="126"
+                                    class="transition-all duration-1000" />
+                                <defs>
+                                    <linearGradient id="stressGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" style="stop-color:var(--teal)" />
+                                        <stop offset="100%" style="stop-color:var(--amber)" />
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center rotate-90"
+                                style="transform:none">
+                                <div class="text-3xl font-black text-yellow-400">50%</div>
+                                <div class="text-xs text-gray-400">Moderate</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-xs text-gray-400"><span>Work</span><span
+                                class="text-yellow-400">High</span></div>
+                        <div class="gauge-track">
+                            <div class="gauge-fill"
+                                style="width:72%;background:linear-gradient(90deg,var(--amber),#ff6b6b)"></div>
+                        </div>
+                        <div class="flex justify-between text-xs text-gray-400"><span>Sleep</span><span
+                                class="text-teal-400">Good</span></div>
+                        <div class="gauge-track">
+                            <div class="gauge-fill"
+                                style="width:30%;background:linear-gradient(90deg,var(--teal),var(--blue))"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Wellness card -->
+                <div class="glass rounded-3xl p-6 stat-card">
+                    <div class="font-semibold mb-5">Wellness Tips</div>
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-3 rounded-xl p-3" style="background:rgba(14,240,200,0.06)">
+                            <i class="fa-solid fa-person-walking text-teal-400 mt-0.5"></i>
+                            <div>
+                                <div class="text-sm font-semibold">10-min Walk</div>
+                                <div class="text-xs text-gray-400">Reduces cortisol by 26%</div>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3 rounded-xl p-3" style="background:rgba(10,132,255,0.06)">
+                            <i class="fa-solid fa-wind text-blue-400 mt-0.5"></i>
+                            <div>
+                                <div class="text-sm font-semibold">Box Breathing</div>
+                                <div class="div text-xs text-gray-400">4-4-4-4 inhale/hold/exhale</div>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3 rounded-xl p-3" style="background:rgba(94,92,230,0.06)">
+                            <i class="fa-solid fa-moon text-indigo-400 mt-0.5"></i>
+                            <div>
+                                <div class="text-sm font-semibold">Sleep Hygiene</div>
+                                <div class="text-xs text-gray-400">Screen-off 1hr before bed</div>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3 rounded-xl p-3" style="background:rgba(255,179,64,0.06)">
+                            <i class="fa-solid fa-droplet text-yellow-400 mt-0.5"></i>
+                            <div>
+                                <div class="text-sm font-semibold">Hydration</div>
+                                <div class="text-xs text-gray-400">8 glasses of water daily</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== FOOTER ===================== -->
+    <footer id="footer" class="py-16 px-6 border-t" style="border-color:var(--glass-border);background:rgba(0,0,0,0.3)">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid md:grid-cols-4 gap-10 mb-12">
+                <!-- Brand -->
+                <div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-9 h-9 rounded-xl flex items-center justify-center"
+                            style="background:linear-gradient(135deg,var(--teal),var(--blue))">
+                            <i class="fa-solid fa-heart-pulse text-white text-sm"></i>
+                        </div>
+                        <span class="text-xl font-black">Care<span class="grad-text">AI</span></span>
+                    </div>
+                    <p class="text-sm text-gray-500 leading-relaxed mb-4">AI-powered healthcare triage for faster,
+                        smarter care decisions.</p>
+                    <div class="flex gap-3">
+                        <a href="#"
+                            class="w-9 h-9 glass rounded-xl flex items-center justify-center text-gray-400 hover:text-white transition text-sm"><i
+                                class="fa-brands fa-twitter"></i></a>
+                        <a href="#"
+                            class="w-9 h-9 glass rounded-xl flex items-center justify-center text-gray-400 hover:text-white transition text-sm"><i
+                                class="fa-brands fa-linkedin"></i></a>
+                        <a href="#"
+                            class="w-9 h-9 glass rounded-xl flex items-center justify-center text-gray-400 hover:text-white transition text-sm"><i
+                                class="fa-brands fa-instagram"></i></a>
+                        <a href="#"
+                            class="w-9 h-9 glass rounded-xl flex items-center justify-center text-gray-400 hover:text-white transition text-sm"><i
+                                class="fa-brands fa-github"></i></a>
+                    </div>
+                </div>
+                <!-- Product -->
+                <div>
+                    <div class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4">Product</div>
+                    <div class="space-y-3">
+                        <a href="#chatbot" class="block text-sm text-gray-400 hover:text-white transition">AI Symptom
+                            Chat</a>
+                        <a href="#assessment" class="block text-sm text-gray-400 hover:text-white transition">Risk
+                            Assessment</a>
+                        <a href="#telemedicine"
+                            class="block text-sm text-gray-400 hover:text-white transition">Telemedicine</a>
+                        <a href="#wearables"
+                            class="block text-sm text-gray-400 hover:text-white transition">Wearables</a>
+                        <a href="#mental-health" class="block text-sm text-gray-400 hover:text-white transition">Mental
+                            Health</a>
+                    </div>
+                </div>
+                <!-- Company -->
+                <div>
+                    <div class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4">Company</div>
+                    <div class="space-y-3">
+                        <a href="#" class="block text-sm text-gray-400 hover:text-white transition">About Us</a>
+                        <a href="#" class="block text-sm text-gray-400 hover:text-white transition">Research</a>
+                        <a href="#" class="block text-sm text-gray-400 hover:text-white transition">Careers</a>
+                        <a href="#" class="block text-sm text-gray-400 hover:text-white transition">Press Kit</a>
+                        <a href="#" class="block text-sm text-gray-400 hover:text-white transition">Blog</a>
+                    </div>
+                </div>
+                <!-- Contact -->
+                <div>
+                    <div class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4">Contact</div>
+                    <div class="space-y-3">
+                        <a href="mailto:hello@careai.health"
+                            class="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition">
+                            <i class="fa-solid fa-envelope text-xs" style="color:var(--teal)"></i> hello@careai.health
+                        </a>
+                        <a href="tel:+911800CAREAI"
+                            class="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition">
+                            <i class="fa-solid fa-phone text-xs" style="color:var(--teal)"></i> 1800-CARE-AI
+                        </a>
+                        <div class="flex items-center gap-2 text-sm text-gray-400">
+                            <i class="fa-solid fa-location-dot text-xs" style="color:var(--teal)"></i> Bengaluru, India
+                        </div>
+                    </div>
+                    <div class="mt-6 p-3 rounded-xl text-xs text-gray-600 leading-relaxed"
+                        style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06)">
+                        <i class="fa-solid fa-shield-halved mr-1 text-teal-700"></i>
+                        CareAI is not a medical device. Content is for informational purposes only and does not
+                        constitute medical advice or diagnosis.
+                    </div>
+                </div>
+            </div>
+            <!-- Bottom bar -->
+            <div class="border-t pt-6 flex flex-col md:flex-row justify-between items-center gap-4"
+                style="border-color:var(--glass-border)">
+                <div class="text-xs text-gray-600">© 2026 CareAI Technologies Pvt. Ltd. · All rights reserved.</div>
+                <div class="flex gap-6 text-xs text-gray-600">
+                    <a href="#" class="hover:text-gray-400 transition">Privacy Policy</a>
+                    <a href="#" class="hover:text-gray-400 transition">Terms of Service</a>
+                    <a href="#" class="hover:text-gray-400 transition">HIPAA Compliance</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ===================== TOAST NOTIFICATION ===================== -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 hidden">
+        <div class="glass rounded-2xl px-5 py-4 flex items-center gap-3 shadow-2xl"
+            style="border-color:rgba(14,240,200,0.4);min-width:260px">
+            <i id="toast-icon" class="fa-solid fa-circle-check text-teal-400"></i>
+            <span id="toast-msg" class="text-sm font-medium"></span>
+        </div>
+    </div>
+
+    <!-- ===================== JAVASCRIPT ===================== -->
+    <script>
+        // ---- State ----
+        let chatHistory = [];
+        let isTyping = false;
+        let voiceActive = false;
+        let callInterval = null;
+        let callSeconds = 0;
+        let lastPain = 5;
+        let assessmentData = {};
+
+        // ---- Translations ----
+        const translations = {
+            en: { heroSubtitle: "CareAI uses advanced artificial intelligence to analyze your symptoms, assess risk levels, and connect you with the right care — instantly." },
+            hi: { heroSubtitle: "CareAI उन्नत कृत्रिम बुद्धिमत्ता का उपयोग करके आपके लक्षणों का विश्लेषण करता है, जोखिम का आकलन करता है और सही देखभाल से जोड़ता है।" },
+            kn: { heroSubtitle: "CareAI ಅತ್ಯಾಧುನಿಕ ಕೃತ್ರಿಮ ಬುದ್ಧಿಮತ್ತೆಯನ್ನು ಬಳಸಿ ನಿಮ್ಮ ರೋಗಲಕ್ಷಣಗಳನ್ನು ವಿಶ್ಲೇಷಿಸುತ್ತದೆ ಮತ್ತು ಸರಿಯಾದ ಆರೈಕೆಯನ್ನು ಒದಗಿಸುತ್ತದೆ." }
+        };
+        function switchLang(lang) {
+            const t = translations[lang] || translations.en;
+            document.getElementById('hero-subtitle').textContent = t.heroSubtitle;
+            showToast(`Language switched to ${lang === 'en' ? 'English' : lang === 'hi' ? 'Hindi' : 'Kannada'}`, 'globe');
+        }
+
+        // ---- Navbar ----
+        function toggleMenu() {
+            const m = document.getElementById('mobile-menu');
+            m.classList.toggle('open');
+        }
+
+        // ---- Pain slider ----
+        function updatePain(v) {
+            lastPain = parseInt(v);
+            document.getElementById('pain-val').textContent = v;
+            const colors = ['', '#4ade80', '#4ade80', '#4ade80', '#a3e635', '#ffb340', '#ffb340', '#fb923c', '#fb923c', '#ff3b3b', '#ff3b3b'];
+            document.getElementById('pain-val').style.color = colors[v] || 'var(--teal)';
+        }
+
+        // ---- Toast ----
+        function showToast(msg, icon = 'check', type = 'success') {
+            const t = document.getElementById('toast');
+            const ic = document.getElementById('toast-icon');
+            const tm = document.getElementById('toast-msg');
+            ic.className = `fa-solid fa-circle-${icon}`;
+            ic.style.color = type === 'error' ? '#ff3b3b' : 'var(--teal)';
+            tm.textContent = msg;
+            t.classList.remove('hidden');
+            setTimeout(() => t.classList.add('hidden'), 3000);
+        }
+
+        // ---- AI Chat ----
+        const aiResponses = {
+            default: [
+                "Based on your symptoms, I'm analyzing potential causes. This sounds like it could be a viral infection. I recommend monitoring your temperature and staying hydrated. If symptoms worsen in 24 hours, please see a doctor.",
+                "I've noted your symptoms. Your description suggests mild to moderate severity. Here are my recommendations: rest well, take paracetamol if you have fever, and drink plenty of fluids. Would you like me to run a full risk assessment?",
+                "Thank you for sharing your symptoms. The pattern you've described is consistent with a few conditions. I'd recommend scheduling a clinic visit within 24 hours. Want me to check available doctors?",
+                "I understand how uncomfortable that feels. Your symptoms suggest you should seek medical attention soon. I'd rate this as a moderate concern. Shall I prepare a detailed health report?",
+            ],
+            emergency: "⚠️ ALERT: Your symptoms — especially chest pain and shortness of breath — require IMMEDIATE emergency care. Please call 112 NOW or have someone drive you to the nearest ER. Do not wait.",
+            fever: "A fever combined with headache can indicate several conditions, from a simple viral infection to something more serious. I'd recommend: monitor your temperature every 4 hours, take paracetamol (500mg) if above 38.5°C, and stay well-hydrated. If fever exceeds 39.5°C, seek medical attention immediately.",
+            throat: "Sore throat for 3 days could be viral (like a cold) or bacterial (strep throat). I recommend: gargle with warm salt water, stay hydrated, try lozenges. If you develop white patches on tonsils or fever above 38°C, you may need antibiotics — please visit a clinic.",
+            stomach: "Severe stomach cramps warrant attention. Possible causes include gastroenteritis, IBS, or appendicitis. Red flags: if pain is concentrated lower-right, you have fever, or vomiting blood — go to the ER immediately. Otherwise, rest, avoid solid food, and hydrate.",
+        };
+
+        function getAIResponse(msg) {
+            const m = msg.toLowerCase();
+            if (m.includes('chest') || m.includes('shortness') || m.includes('breath')) return aiResponses.emergency;
+            if (m.includes('fever') || m.includes('headache') || m.includes('temperature')) return aiResponses.fever;
+            if (m.includes('throat') || m.includes('sore')) return aiResponses.throat;
+            if (m.includes('stomach') || m.includes('cramp') || m.includes('abdominal')) return aiResponses.stomach;
+            return aiResponses.default[Math.floor(Math.random() * aiResponses.default.length)];
+        }
+
+        function addMessage(text, isUser) {
+            const box = document.getElementById('chat-box');
+            const div = document.createElement('div');
+            div.className = `flex items-start gap-3 ${isUser ? 'flex-row-reverse slide-right' : 'slide-left'}`;
+            const icon = isUser
+                ? `<div class="w-8 h-8 rounded-xl flex-shrink-0 flex items-center justify-center text-sm" style="background:rgba(10,132,255,0.3)">🙂</div>`
+                : `<div class="w-8 h-8 rounded-xl flex-shrink-0 flex items-center justify-center text-xs" style="background:linear-gradient(135deg,var(--teal),var(--blue))"><i class="fa-solid fa-robot text-white"></i></div>`;
+            const bubble = isUser
+                ? `<div class="chat-user p-4 max-w-sm text-sm">${text}</div>`
+                : `<div class="chat-ai p-4 max-w-sm text-sm text-gray-200">${text}</div>`;
+            div.innerHTML = isUser ? `${bubble}${icon}` : `${icon}${bubble}`;
+            box.appendChild(div);
+            box.scrollTop = box.scrollHeight;
+        }
+
+        function showTyping() {
+            const box = document.getElementById('chat-box');
+            const div = document.createElement('div');
+            div.id = 'typing-indicator';
+            div.className = 'flex items-start gap-3 slide-left';
+            div.innerHTML = `<div class="w-8 h-8 rounded-xl flex-shrink-0 flex items-center justify-center text-xs" style="background:linear-gradient(135deg,var(--teal),var(--blue))"><i class="fa-solid fa-robot text-white"></i></div><div class="chat-ai p-4 flex items-center gap-1"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>`;
+            box.appendChild(div);
+            box.scrollTop = box.scrollHeight;
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const msg = input.value.trim();
+            if (!msg || isTyping) return;
+            input.value = '';
+            addMessage(msg, true);
+            isTyping = true;
+            showTyping();
+            setTimeout(() => {
+                const ti = document.getElementById('typing-indicator');
+                if (ti) ti.remove();
+                addMessage(getAIResponse(msg), false);
+                isTyping = false;
+            }, 1500 + Math.random() * 1000);
+        }
+
+        function sendSuggestion(btn) {
+            document.getElementById('chat-input').value = btn.textContent;
+            sendMessage();
+        }
+
+        // ---- Voice ----
+        function toggleVoice() {
+            voiceActive = !voiceActive;
+            const btn = document.getElementById('voice-btn');
+            if (voiceActive) {
+                btn.style.background = 'rgba(14,240,200,0.2)';
+                btn.style.color = 'var(--teal)';
+                showToast('Voice input active — speak now', 'microphone');
+            } else {
+                btn.style.background = '';
+                btn.style.color = '';
+            }
+        }
+
+        function toggleVoicePanel() {
+            voiceActive = !voiceActive;
+            const status = document.getElementById('voice-status');
+            const waveform = document.getElementById('waveform');
+            const transcript = document.getElementById('voice-transcript');
+            const btn = document.getElementById('main-mic-btn');
+            if (voiceActive) {
+                status.textContent = 'Listening...';
+                status.style.color = 'var(--teal)';
+                waveform.style.display = 'flex';
+                btn.style.boxShadow = '0 0 60px rgba(14,240,200,0.7)';
+                setTimeout(() => {
+                    const phrases = ["I have a fever and sore throat since yesterday", "Book an appointment with Dr. Priya Nair", "Show my latest health report", "What is my current risk score?"];
+                    const picked = phrases[Math.floor(Math.random() * phrases.length)];
+                    document.getElementById('voice-text').textContent = picked;
+                    transcript.classList.remove('hidden');
+                    voiceActive = false;
+                    status.textContent = 'Tap to speak';
+                    status.style.color = '';
+                    waveform.style.display = 'none';
+                    btn.style.boxShadow = '0 0 40px rgba(14,240,200,0.4)';
+                }, 2500);
+            } else {
+                status.textContent = 'Tap to speak';
+                status.style.color = '';
+                waveform.style.display = 'none';
+                btn.style.boxShadow = '0 0 40px rgba(14,240,200,0.4)';
+            }
+        }
+
+        // ---- Assessment ----
+        function runAssessment() {
+            const name = document.getElementById('f-name').value || 'Anonymous';
+            const age = document.getElementById('f-age').value || 'N/A';
+            const gender = document.getElementById('f-gender').value || 'N/A';
+            const symptom = document.getElementById('f-symptom').value || 'General';
+            const additional = document.getElementById('f-additional').value;
+            const conditions = document.getElementById('f-conditions').value;
+            const meds = document.getElementById('f-meds').value;
+            const pain = lastPain;
+
+            const btn = document.getElementById('assess-btn');
+            btn.innerHTML = `<div class="w-5 h-5 border-2 border-gray-900 border-t-transparent rounded-full spin"></div> Analyzing...`;
+            btn.disabled = true;
+
+            setTimeout(() => {
+                // Compute fake risk score based on inputs
+                let base = pain * 5;
+                if (symptom.includes('Chest')) base += 30;
+                if (symptom.includes('Breath')) base += 25;
+                if (conditions && conditions !== '') base += 15;
+                if (age && parseInt(age) > 65) base += 10;
+                const score = Math.min(100, Math.max(10, base + Math.floor(Math.random() * 15)));
+
+                assessmentData = { name, age, gender, symptom, pain, conditions, meds, score, additional };
+                showRiskDashboard(assessmentData);
+                btn.innerHTML = `<i class="fa-solid fa-check"></i> Assessment Complete`;
+                btn.style.background = 'linear-gradient(135deg,#4ade80,#22d3ee)';
+                showToast('Risk assessment complete!', 'check');
+            }, 2500);
+        }
+
+        function getRiskLevel(score) {
+            if (score <= 30) return { label: 'Low Risk', color: '#4ade80', bg: 'rgba(74,222,128,0.15)', border: 'rgba(74,222,128,0.3)' };
+            if (score <= 60) return { label: 'Moderate', color: 'var(--amber)', bg: 'rgba(255,179,64,0.15)', border: 'rgba(255,179,64,0.3)' };
+            if (score <= 80) return { label: 'High Risk', color: '#fb923c', bg: 'rgba(251,146,60,0.15)', border: 'rgba(251,146,60,0.3)' };
+            return { label: 'Emergency', color: '#f87171', bg: 'rgba(255,59,59,0.15)', border: 'rgba(255,59,59,0.4)' };
+        }
+
+        const insights = {
+            low: "Your current symptoms suggest a low-risk condition. This appears consistent with a minor viral infection or mild inflammatory response. I recommend rest, adequate hydration, and OTC symptom relief. Monitor your temperature and symptoms over the next 24–48 hours. If symptoms persist beyond 3 days or worsen significantly, consider scheduling a clinic visit.",
+            moderate: "Your symptom profile indicates a moderate health concern. The combination of reported symptoms and pain severity warrants professional evaluation within 24 hours. I recommend scheduling a same-day or next-day clinic appointment. In the meantime, rest, stay hydrated, and avoid strenuous activity. Take prescribed OTC medication for symptom management.",
+            high: "Your assessment reveals a high-risk symptom profile. Multiple clinical indicators suggest you require prompt medical attention. Please schedule an urgent clinic visit or telehealth consultation today. Do not delay care. Bring your medication list and pre-existing condition information to your appointment. If symptoms worsen rapidly, proceed to the nearest emergency room.",
+            emergency: "⚠️ CRITICAL: Your symptom profile triggers multiple emergency-level indicators. Immediate medical intervention is required. Call 112 or proceed to the nearest Emergency Room immediately. Do not drive yourself. Inform a family member or caregiver now. This assessment indicates a potential life-threatening condition that requires immediate professional evaluation."
+        };
+
+        function showRiskDashboard(data) {
+            const { score } = data;
+            const level = getRiskLevel(score);
+
+            document.getElementById('risk-dashboard').style.display = 'block';
+            document.getElementById('care-recommendations').style.display = 'block';
+            document.getElementById('health-report').style.display = 'block';
+            document.getElementById('risk-dashboard').scrollIntoView({ behavior: 'smooth' });
+
+            // Score
+            document.getElementById('risk-score-num').textContent = score;
+            const badge = document.getElementById('risk-badge');
+            badge.textContent = level.label;
+            badge.style.background = level.bg;
+            badge.style.border = `1px solid ${level.border}`;
+            badge.style.color = level.color;
+            badge.innerHTML = `<i class="fa-solid fa-circle-dot"></i> ${level.label}`;
+
+            // Bars
+            const bars = document.getElementById('risk-bars');
+            const categories = [
+                { name: 'Cardiovascular Risk', pct: Math.min(100, score + (Math.random() * 20 | 0) - 5), color: '#f87171' },
+                { name: 'Infection Risk', pct: Math.min(100, score - 5 + (Math.random() * 20 | 0)), color: 'var(--amber)' },
+                { name: 'Inflammatory Score', pct: Math.min(100, score - 10 + (Math.random() * 20 | 0)), color: '#fb923c' },
+                { name: 'Urgency Index', pct: Math.min(100, score + (Math.random() * 10 | 0)), color: 'var(--teal)' },
+            ];
+            bars.innerHTML = '';
+            categories.forEach(c => {
+                const p = Math.max(5, Math.min(100, c.pct));
+                bars.innerHTML += `<div>
+      <div class="flex justify-between text-xs text-gray-400 mb-1"><span>${c.name}</span><span style="color:${c.color}">${p}%</span></div>
+      <div class="gauge-track"><div class="gauge-fill" style="width:${p}%;background:${c.color}"></div></div>
+    </div>`;
+            });
+
+            // Emergency section
+            if (score > 80) {
+                document.getElementById('emergency-section').style.display = 'block';
+            }
+
+            // Insight
+            let ins = score <= 30 ? insights.low : score <= 60 ? insights.moderate : score <= 80 ? insights.high : insights.emergency;
+            document.getElementById('ai-insight').textContent = ins;
+
+            // Report
+            const now = new Date();
+            document.getElementById('report-timestamp').textContent = `Generated: ${now.toLocaleString()}`;
+            document.getElementById('rep-name').textContent = data.name;
+            document.getElementById('rep-age-gender').textContent = `${data.age} yrs · ${data.gender}`;
+            document.getElementById('rep-symptom').textContent = data.symptom;
+            document.getElementById('rep-pain').textContent = `${data.pain}/10`;
+            document.getElementById('rep-score').textContent = score;
+            const repBadge = document.getElementById('rep-level-badge');
+            repBadge.textContent = level.label;
+            repBadge.style.background = level.bg;
+            repBadge.style.border = `1px solid ${level.border}`;
+            repBadge.style.color = level.color;
+            document.getElementById('rep-recommendations').textContent = ins;
+        }
+
+        // ---- Telemedicine ----
+        function startVideoCall(docName) {
+            document.getElementById('video-modal').classList.remove('hidden');
+            document.getElementById('video-doc-name').textContent = `📹 ${docName}`;
+            callSeconds = 0;
+            clearInterval(callInterval);
+            callInterval = setInterval(() => {
+                callSeconds++;
+                const m = String(Math.floor(callSeconds / 60)).padStart(2, '0');
+                const s = String(callSeconds % 60).padStart(2, '0');
+                document.getElementById('call-timer').textContent = `${m}:${s}`;
+            }, 1000);
+            document.getElementById('video-modal').scrollIntoView({ behavior: 'smooth' });
+            showToast(`Connecting to ${docName}...`, 'video');
+        }
+        function endCall() {
+            document.getElementById('video-modal').classList.add('hidden');
+            clearInterval(callInterval);
+            showToast('Call ended', 'phone');
+        }
+
+        // ---- Reports ----
+        function printReport() { showToast('Preparing print view...', 'print'); window.print(); }
+        function shareReport() { showToast('Report link copied to clipboard!', 'share-nodes'); }
+
+        // ---- Mood ----
+        function selectMood(btn, emoji, label) {
+            document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('mood-text').textContent = `Feeling ${label} logged ✓`;
+            document.getElementById('mood-text').style.color = 'var(--teal)';
+        }
+
+        // ---- Live vitals simulation ----
+        setInterval(() => {
+            const hr = 72 + Math.floor(Math.random() * 20 - 5);
+            document.getElementById('hr-val').textContent = hr;
+            const spo2 = 97 + Math.floor(Math.random() * 2);
+            document.getElementById('spo2-val').textContent = spo2 + '%';
+            const temp = (36.8 + Math.random() * 0.8).toFixed(1);
+            document.getElementById('temp-val').textContent = temp + '°';
+            document.getElementById('last-updated').textContent = 'just now';
+        }, 4000);
+
+        // ---- Charts ----
+        function initCharts() {
+            // Hero mini chart
+            const heroCtx = document.getElementById('heroChart').getContext('2d');
+            new Chart(heroCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        data: [65, 72, 58, 81, 70, 62, 75],
+                        borderColor: 'rgba(14,240,200,0.8)',
+                        backgroundColor: 'rgba(14,240,200,0.08)',
+                        tension: 0.4, fill: true, borderWidth: 2,
+                        pointBackgroundColor: 'var(--teal)', pointRadius: 3,
+                    }]
+                },
+                options: {
+                    responsive: true, plugins: { legend: { display: false } },
+                    scales: {
+                        x: { display: false },
+                        y: { display: false },
+                    }
+                }
+            });
+
+            // Symptom chart
+            const symCtx = document.getElementById('symptomChart').getContext('2d');
+            new Chart(symCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Today'],
+                    datasets: [
+                        { label: 'Fever', data: [2, 5, 7, 6, 4, 3, 2], backgroundColor: 'rgba(255,107,107,0.7)', borderRadius: 6 },
+                        { label: 'Fatigue', data: [3, 4, 5, 7, 5, 4, 3], backgroundColor: 'rgba(10,132,255,0.7)', borderRadius: 6 },
+                        { label: 'Pain', data: [1, 3, 4, 5, 3, 2, 2], backgroundColor: 'rgba(14,240,200,0.7)', borderRadius: 6 },
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { labels: { color: '#9ca3af', font: { size: 11 } } } },
+                    scales: {
+                        x: { ticks: { color: '#6b7280', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+                        y: { ticks: { color: '#6b7280', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.04)' }, max: 10 }
+                    }
+                }
+            });
+
+            // Risk trend chart
+            const riskCtx = document.getElementById('riskChart').getContext('2d');
+            new Chart(riskCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Apr 1', 'Apr 8', 'Apr 15', 'Apr 22', 'Apr 28', 'May 5', 'May 12'],
+                    datasets: [{
+                        label: 'Risk Score',
+                        data: [45, 38, 54, 88, 72, 55, 67],
+                        borderColor: 'rgba(94,92,230,0.9)',
+                        backgroundColor: 'rgba(94,92,230,0.1)',
+                        tension: 0.4, fill: true, borderWidth: 2,
+                        pointBackgroundColor: '#5e5ce6', pointRadius: 4,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { labels: { color: '#9ca3af', font: { size: 11 } } } },
+                    scales: {
+                        x: { ticks: { color: '#6b7280', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+                        y: { ticks: { color: '#6b7280', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.04)' }, min: 0, max: 100 }
+                    }
+                }
+            });
+
+            // Mood chart
+            const moodCtx = document.getElementById('moodChart').getContext('2d');
+            new Chart(moodCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        data: [3, 4, 3, 2, 4, 5, 4],
+                        borderColor: 'rgba(14,240,200,0.8)',
+                        backgroundColor: 'rgba(14,240,200,0.06)',
+                        tension: 0.4, fill: true, borderWidth: 2,
+                        pointBackgroundColor: 'var(--teal)', pointRadius: 3,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { ticks: { color: '#6b7280', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+                        y: { display: false, min: 0, max: 6 }
+                    }
+                }
+            });
+        }
+
+        // ---- Intersection observer for fade-in ----
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(e => {
+                if (e.isIntersecting) { e.target.classList.add('visible'); }
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.observe-fade').forEach(el => observer.observe(el));
+
+        // ---- Init ----
+        window.addEventListener('load', () => {
+            initCharts();
+            // Navbar scroll effect
+            window.addEventListener('scroll', () => {
+                const nav = document.querySelector('.navbar');
+                if (window.scrollY > 50) {
+                    nav.style.background = 'rgba(5,13,26,0.97)';
+                } else {
+                    nav.style.background = 'rgba(5,13,26,0.85)';
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

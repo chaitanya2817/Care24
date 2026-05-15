@@ -1,0 +1,341 @@
+You are upgrading an existing CareAI healthcare web application. 
+
+CRITICAL RULES:
+- DO NOT remove, break, redesign, or downgrade ANY existing features, UI, animations, charts, sections, styling, or workflows.
+- Keep the entire current frontend fully intact and working.
+- Add all new functionality on top of the existing codebase.
+- Ensure production-grade stability with zero console errors, zero broken buttons, zero undefined variables, and zero UI glitches.
+- Preserve all Tailwind styling, responsiveness, animations, charts, and existing interactions.
+- All features must work end-to-end with real backend integration.
+- Everything must be mobile responsive and optimized.
+- Use clean modular architecture.
+- Add proper loading states, retry handling, error boundaries, and fallbacks.
+- Ensure accessibility and performance optimization.
+- Do not use mock-only implementations.
+- Build fully working backend + frontend integration.
+
+PROJECT STACK:
+Frontend:
+- Existing HTML/CSS/JavaScript UI already implemented
+- TailwindCSS
+- Chart.js
+- FontAwesome
+
+Backend:
+- Node.js + Express
+- MongoDB
+- JWT Authentication
+- WebSocket support for realtime updates
+- REST APIs
+
+DEPLOYMENT:
+- Must run perfectly on Replit
+- Include environment variable setup
+- Include package.json scripts
+- Include backend folder structure
+- Include API routes
+- Include MongoDB connection
+- Include README with setup instructions
+
+NOW ADD THESE FEATURES:
+
+==================================================
+1. FULL MULTILINGUAL SUPPORT
+==================================================
+
+Add complete language localization support for:
+- English
+- Hindi
+- Kannada
+
+Requirements:
+- Every visible UI text must translate dynamically
+- Navbar
+- Buttons
+- Labels
+- Chat messages
+- AI responses
+- Alerts
+- Forms
+- Reports
+- Voice assistant
+- Telemedicine section
+- Risk dashboard
+- Emergency alerts
+- Recommendations
+- Validation messages
+- Toast notifications
+
+Implementation:
+- Create centralized i18n translation system
+- Use JSON translation files:
+  /locales/en.json
+  /locales/hi.json
+  /locales/kn.json
+
+Requirements:
+- Real-time language switching without reload
+- Persist selected language in localStorage
+- Automatically restore language on refresh
+- No flickering during switch
+- Fallback to English if translation missing
+- Fully Unicode compatible
+- Proper Kannada rendering support
+- Translate dynamically generated AI content
+
+Add helper functions:
+- setLanguage()
+- translatePage()
+- translateDynamicContent()
+
+==================================================
+2. ADVANCED VOICE SUPPORT
+==================================================
+
+Add FULLY WORKING multilingual voice assistant.
+
+Languages:
+- English
+- Hindi
+- Kannada
+
+Requirements:
+- Speech-to-text
+- Text-to-speech
+- Continuous listening mode
+- Voice commands
+- Real-time transcript
+- AI spoken responses
+- Auto language detection
+- Microphone permissions handling
+- Noise/error handling
+- Voice activity animations
+- Retry if recognition fails
+
+Use:
+- Web Speech API
+- SpeechRecognition
+- SpeechSynthesis
+
+Requirements:
+- Kannada speech recognition support
+- Hindi speech recognition support
+- English speech recognition support
+- Dynamic voice switching based on selected language
+
+Voice commands examples:
+- "I have fever"
+- "Book doctor appointment"
+- "Show my report"
+- "Call emergency"
+
+Add:
+- Start/Stop listening
+- Voice waveform animations
+- Speaking indicators
+- Mute toggle
+- Voice status UI
+
+Backend support:
+- Store voice transcripts
+- Store conversation history
+- Save preferred language
+
+==================================================
+3. COMPLETE LOGIN & AUTH SYSTEM
+==================================================
+
+Add fully working authentication system WITHOUT breaking current UI.
+
+Features:
+- Signup
+- Login
+- Logout
+- Forgot password
+- JWT authentication
+- Session persistence
+- Refresh tokens
+- Protected routes
+- User profile
+- Save assessments per user
+- Save reports per user
+- Save chat history
+- Save language preferences
+- Save voice settings
+
+Authentication methods:
+- Email/password
+- Google login
+
+Backend:
+- MongoDB user schema
+- Password hashing with bcrypt
+- JWT middleware
+- Auth routes
+- Secure cookies
+- Validation
+
+Frontend:
+- Beautiful glassmorphism auth modal
+- Keep current design language
+- Smooth transitions
+- Mobile responsive
+- Form validation
+- Loading states
+- Error messages
+
+Add:
+- Auth context/state manager
+- Auto login restore
+- Route protection
+- API interceptors
+
+==================================================
+4. REAL BACKEND INTEGRATION
+==================================================
+
+Build full backend integration.
+
+Create:
+- Express server
+- MongoDB models
+- API routes
+- Controllers
+- Middleware
+- WebSocket server
+
+APIs:
+- /api/auth/*
+- /api/chat/*
+- /api/assessment/*
+- /api/report/*
+- /api/voice/*
+- /api/user/*
+- /api/language/*
+- /api/telemedicine/*
+
+Requirements:
+- Save assessments
+- Save reports
+- Save chat history
+- Save user settings
+- Realtime updates
+- Error handling
+- API validation
+- Rate limiting
+- Helmet security
+- CORS setup
+
+==================================================
+5. AI CHAT IMPROVEMENTS
+==================================================
+
+Upgrade chatbot with:
+- Typing indicators
+- Streaming responses
+- Better symptom analysis
+- Context memory
+- Multilingual AI replies
+- Voice replies
+- Emergency detection
+- Intent detection
+- Better risk scoring
+- Chat persistence
+- Auto scroll
+- Message timestamps
+
+==================================================
+6. NO-GLITCH REQUIREMENTS
+==================================================
+
+Fix and prevent:
+- Undefined variables
+- Broken event listeners
+- Duplicate functions
+- Memory leaks
+- Multiple mic instances
+- Speech API crashes
+- Chart rendering issues
+- Mobile responsiveness bugs
+- Scroll glitches
+- Overflow issues
+- Animation lag
+- Race conditions
+- Async issues
+- Double API calls
+- Unhandled promise rejections
+
+Add:
+- Global error handler
+- Toast notification system
+- API retry system
+- Graceful fallbacks
+- Debouncing
+- Cleanup functions
+
+==================================================
+7. FILE STRUCTURE
+==================================================
+
+Create scalable structure:
+
+/frontend
+  /js
+  /components
+  /services
+  /utils
+  /locales
+  /styles
+
+/backend
+  /config
+  /controllers
+  /middleware
+  /models
+  /routes
+  /services
+  /utils
+
+==================================================
+8. REPLIT READY
+==================================================
+
+Provide:
+- package.json
+- .env.example
+- README.md
+- Replit run configuration
+- MongoDB setup
+- Start scripts
+- Build scripts
+
+==================================================
+9. FINAL REQUIREMENTS
+==================================================
+
+- Keep ALL existing features working
+- Keep current UI design
+- Keep animations
+- Keep charts
+- Keep sections
+- Keep responsiveness
+- Add new features seamlessly
+- Ensure everything works end-to-end
+- Production-ready implementation only
+- No placeholders
+- No pseudo code
+- No incomplete sections
+- No broken imports
+- No missing dependencies
+- No console errors
+
+Finally:
+- Refactor existing JS into modular architecture
+- Optimize performance
+- Add comments for maintainability
+- Ensure clean code standards
+- Test all flows
+- Ensure multilingual voice assistant works perfectly in Kannada, Hindi, and English
+- Ensure login/auth works perfectly
+- Ensure backend APIs are fully connected
+- Ensure the app runs flawlessly on Replit
